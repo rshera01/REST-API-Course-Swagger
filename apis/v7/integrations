@@ -1,0 +1,3372 @@
+---
+openapi: 3.0.2
+info:
+  title: Integration_APIs
+  version: "3.0"
+  description: These are the API's related to Integration framework
+  contact:
+    url: https://www.opsramp.com/support/
+    email: sheshachalam.ratnala@opsramp.com
+  license:
+    name: GNU GPLv3
+    url: https://www.gnu.org/licenses/gpl.txt
+servers:
+- url: https://<base_url>/api/v2/tenants/<client_id>
+  description: This is the base URL
+paths:
+  /integrations/install/{intgID}:
+    summary: Install the selected integation from the given category
+    servers:
+    - url: https://<base_url>/api/v2/tenants/<client_id>
+      description: ""
+    post:
+      requestBody:
+        description: "{\n\t\"displayName\" : \"API Testing\",\n\t\"category\" : \"\
+          Monitoring\",\n\t\"alertSource\" : {\n\t\t\"id\" : \"30\"\n\t}\n}"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/integration_container'
+            examples:
+              Monitoring-Type:
+                value:
+                  displayName: API Testing
+                  category: Monitoring
+                  alertSource:
+                    id: "30"
+              Install custom integration with only authentication details:
+                value:
+                  displayName: API Testing
+                  category: Custom
+                  inboundConfig:
+                    authentication:
+                      authType: OAUTH2
+                      role:
+                        uniqueId: ROLE-4718b729-50cc-6634-42c4-ecd09558389d
+        required: true
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Integration APIs
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/integration_container'
+              examples:
+                custom_integration:
+                  value:
+                    id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
+                    displayName: API Testing
+                    integration:
+                      id: CUSTOM
+                      name: Custom
+                    category: Monitoring
+                    alertSource:
+                      id: 30
+                      name: Custom
+                      displayName: Custom
+                      techUid: CUSTOM
+          description: Returns the installed custom integration with id
+      operationId: install
+      summary: install integration with custom and defaut type
+    parameters:
+    - examples:
+        integrationID:
+          value: CUSTOM
+      name: intgID
+      schema:
+        type: string
+      in: path
+      required: true
+  /integrations/available/search/:
+    summary: Search OpsRamp provided integrations
+    description: Search all the available integrations list
+    servers:
+    - url: https://<base_url>/api/v2/tenants/<client_id>
+      description: ""
+    get:
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Integration APIs
+      parameters:
+      - name: pageNo
+        description: the queried page no
+        schema:
+          type: number
+        in: query
+      - name: pageSize
+        description: Size 0f the page
+        schema:
+          type: number
+        in: query
+      - name: isDescendingOrder
+        description: ""
+        schema:
+          type: boolean
+        in: query
+      - name: sortName
+        description: sorting list
+        schema:
+          type: string
+        in: query
+      - name: queryString
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/integration_list'
+              examples:
+                available_integrations:
+                  value:
+                    results:
+                    - id: ALERTLOGIC
+                      name: Alert Logic
+                    - id: DELLCOMPELLENT
+                      name: Dell Compellent
+                    - id: Email Alerts
+                      name: Email Alerts
+                    - id: GRAPHITE
+                      name: Graphite
+                    - id: NAGIOS
+                      name: Nagios
+                    - id: NEUSTAR
+                      name: Neustar
+                    - id: NEWRELIC_LEGACY
+                      name: NewRelic_Legacy
+                    - id: NIMSOFT
+                      name: Nimsoft
+                    - id: OPSMANAGER
+                      name: OpsManager
+                    - id: CUSTOM
+                      name: Custom
+                    totalResults: 14
+                    pageNo: 1
+                    pageSize: 10
+                    totalPages: 2
+                    nextPage: true
+                    nextPageNo: 2
+                    previousPageNo: 0
+                    descendingOrder: false
+          description: success get al the available list.
+      description: Search in the  available list
+  /integrations/installed/search:
+    summary: Search from all the installed integration for a tenant
+    description: Search all the available integrations list
+    servers:
+    - url: https://<base_url>/api/v2/tenants/<client_id>
+      description: ""
+    get:
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Integration APIs
+      parameters:
+      - name: pageNo
+        description: the queried page no
+        schema:
+          type: number
+        in: query
+      - name: pageSize
+        description: Size 0f the page
+        schema:
+          type: number
+        in: query
+      - name: isDescendingOrder
+        description: ""
+        schema:
+          type: boolean
+        in: query
+      - name: sortName
+        description: sorting list
+        schema:
+          type: string
+        in: query
+      - name: queryString
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/integration_instance'
+              examples:
+                installed_integration_payload:
+                  value:
+                    results:
+                    - id: INTG-ad3c79cb-8e18-4399-8b0a-7bba245e0aac
+                      displayName: Email-intg
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps: []
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@3BmYRDD2a7rNjjuuSfdNR8pa.null
+                    - id: INTG-41416066-6119-4de6-83a0-542f88c1e6c8
+                      displayName: Email-Nagios
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: Critical-State-Identifier
+                        identifier: ^Critical
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: resource
+                            endValue: state
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: monitor
+                            endValue: metrics
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: Device
+                            endValue: needs
+                        - name: Subject
+                          defaultValue: The is  email Alerting example
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@3gafaZv4msZGU8m4dj9JZmAD.opsramp.net
+                    - id: INTG-46470947-23cb-4dda-83cf-34ab2abc77fd
+                      displayName: Nagious-email-watch
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: ^Critical
+                        identifier: ^Critcal
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_SUBJECT
+                            operator: BETWEEN
+                            startValue: A
+                            endValue: B
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 3
+                        name: Nagios
+                        displayName: Nagios
+                        techUid: NAGIOS
+                      emailAddress: alerts@9sdwFU2tpmFuajUNATs7c88z.opsramp.net
+                    - id: INTG-3d86c781-d2b0-45c2-a585-f8275e91897b
+                      displayName: Sensu-email-integration
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: "."
+                        identifier: "."
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Critical
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: MATCHES
+                            regexStr: "."
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: MATCHES
+                            regexStr: "."
+                      alertSource:
+                        id: 13
+                        name: Sensu
+                        displayName: Sensu
+                        techUid: SENSU
+                      emailAddress: alerts@HwH5yqU2casyg3N8TADwSmUh.opsramp.net
+                    - id: INTG-680a62cf-b64d-47da-ae48-d07c0808de6d
+                      displayName: Testemail
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: Critical-State-Rule
+                        identifier: Critical
+                        identifierSource: EMAIL_CONTENT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                      - name: Default Set
+                        identifier: "."
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Device Host Name
+                          defaultValue: DEvice
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Service Name
+                          defaultValue: Default_Metric
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@jkpHMe95wP2v8Ff6eFKCeDvc.opsramp.net
+                    - id: INTG-a90ab22a-2809-4fc3-9c87-f9778edcda02
+                      integration:
+                        id: NEWRELIC
+                        name: NewRelic
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: deviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: currentState
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Ok
+                            thirdPartyAttrValue: OK
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: serviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                    - id: INTG-49ba2d50-1cb3-493f-b811-fb79aba4a5f4
+                      integration:
+                        id: PINGDOM
+                        name: Pingdom
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-6d518415-a784-4d77-9a7d-069cd8e51a8f
+                      integration:
+                        id: NEUSTAR
+                        name: Neustar
+                    - id: INTG-fb3ea6d1-6bdc-4795-9d58-08b8419f07d4
+                      integration:
+                        id: ALERTLOGIC
+                        name: Alert Logic
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: device
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: currentState
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: serviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                    - id: INTG-cc45ecef-1e57-41b6-92c0-4d91e9b83d48
+                      integration:
+                        id: SOLARWINDS
+                        name: Solarwinds
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-566ca668-ec8d-4d8b-9706-9c7775773466
+                      displayName: emc-Dell
+                      integration:
+                        id: DELLCOMPELLENT
+                        name: Dell Compellent
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-e0711795-1c09-43a2-ba3b-f45e93a6f63a
+                      integration:
+                        id: SCOM
+                        name: System Center Operations Manager
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: MonitoringObjectDisplayName
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: Description
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: Name
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: External alert ID
+                          attrName: alert.extAlertId
+                          thirdPartyAttrName: AlertId
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: State
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Critical
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Ok
+                            thirdPartyAttrValue: Ok
+                          - attrValue: Info
+                            thirdPartyAttrValue: Informational
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: MonitoringObjectFullName
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                    - id: INTG-22ded62b-7d10-4f2f-9f46-ac4f71c9ade2
+                      integration:
+                        id: OPSMANAGER
+                        name: OpsManager
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: EesREH6yEre8aysEYJmjANB2yWUzf8Eh
+                    - id: INTG-390844d9-a140-4181-89a5-6160a8192526
+                      displayName: Test-OEM
+                      integration:
+                        id: ORACLE
+                        name: Oracle
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-5dbddda9-4eae-4b52-9947-40b7dfa154c4
+                      integration:
+                        id: ZABBIX
+                        name: Zabbix
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: IP
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: Description
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: Subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: External alert ID
+                          attrName: alert.extAlertId
+                          thirdPartyAttrName: EventID
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: State
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Info
+                            thirdPartyAttrValue: Information
+                          - attrValue: Critical
+                            thirdPartyAttrValue: High
+                          - attrValue: Ok
+                            thirdPartyAttrValue: OK
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: Metric
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                    - id: INTG-b38f8b1c-48fc-4dc2-bdbb-3b3b15c88ce3
+                      integration:
+                        id: NAGIOS
+                        name: Nagios
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: f2Hut6GS9yTFcd29FE3HNzX8xBfDNCNf
+                    - id: INTG-a3ecddc2-3c8d-44d4-88d1-d3e69946fc85
+                      integration:
+                        id: OMS
+                        name: OMS
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-1cc80afc-05cd-4e01-bf76-c315091a0e02
+                      integration:
+                        id: ALARMTRAQ
+                        name: AlarmTraq
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: fc84DM4P2TgDk4nwKKfxDmmpcmrhk8dv
+                    - id: INTG-fb63e244-b782-4f67-83e3-4709af11c64f
+                      integration:
+                        id: APPDYNAMICS
+                        name: AppDynamics
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: GmxhzZV4ZJRKvvvEGw4BVUwXjZFhNccG
+                    - id: INTG-ac75b590-f215-4b62-9e81-0cf65bf7e311
+                      integration:
+                        id: IRIS
+                        name: IRIS Network Systems
+                    - id: INTG-c66ba960-7c78-4106-82c6-358b6127b338
+                      integration:
+                        id: STACKDRIVER
+                        name: Stackdriver
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-97aaae04-3583-45e0-bb10-c0b925ef7e00
+                      integration:
+                        id: HPOMI
+                        name: Operations Manager i
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-c6ee171b-87b3-4369-a8b4-f6325739f568
+                      integration:
+                        id: DATADOG
+                        name: Datadog
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-f498f43c-740e-48ef-9a55-804344449ad8
+                      integration:
+                        id: PRISMAPUBLICCLOUD
+                        name: Prisma Public Cloud
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: resourceName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: policyDescription
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: policyName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: severity
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: high
+                          - attrValue: Warning
+                            thirdPartyAttrValue: medium
+                          - attrValue: Ok
+                            thirdPartyAttrValue: low
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: resourceCloudService
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                        - name: Alert time
+                          attrName: alert.alertTime
+                          thirdPartyAttrName: sentTs
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                    - id: INTG-4b73b4cd-617e-413a-89de-005c7e6ae28f
+                      integration:
+                        id: SITE24X7
+                        name: Site24x7
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: MONITORNAME
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: 'MONITORNAME ($MONITORURL) $INCIDENT_REASON
+                            <br>FAILED_LOCATIONS : $FAILED_LOCATIONS <br> MONITOR_ID:
+                            $MONITOR_ID <br> OUTAGE_TIME_UNIX_FORMAT : $OUTAGE_TIME_UNIX_FORMAT
+                            <br> MONITOR_DASHBOARD_LINK :$MONITOR_DASHBOARD_LINK <br>
+                            TIMEZONE : $TIMEZONE <br> POLLFREQUENCY : $POLLFREQUENCY
+                            <br> INCIDENT_TIME : $INCIDENT_TIME <br> INCIDENT_TIME_ISO
+                            : $INCIDENT_TIME_ISO <br> RCA_LINK : $RCA_LINK'
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: MONITORNAME ($MONITORURL) $INCIDENT_REASON
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: STATUS
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: DOWN
+                          - attrValue: Warning
+                            thirdPartyAttrValue: CRITICAL
+                          - attrValue: Ok
+                            thirdPartyAttrValue: UP
+                          - attrValue: Info
+                            thirdPartyAttrValue: TROUBLE
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: MONITORTYPE
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                    - id: INTG-d6f1480b-be87-4778-bc50-aa86912d4f52
+                      integration:
+                        id: SOLARWINDSORION
+                        name: Solarwinds Orion
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: resourceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: status
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Critical
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Info
+                            thirdPartyAttrValue: Informational
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Serious
+                          - attrValue: Ok
+                            thirdPartyAttrValue: Notice
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: object_type
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                    totalResults: 26
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: false
+          description: success get al the available list.
+      description: 'Search from all the installed integrations '
+  /integrations/installed/{intgID}:
+    summary: Installing an integration
+    description: Search all the available integrations list
+    servers:
+    - url: https://<base_url>/api/v2/tenants/<client_id>
+      description: ""
+    get:
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Integration APIs
+      parameters:
+      - name: pageNo
+        description: the queried page no
+        schema:
+          type: number
+        in: query
+      - name: pageSize
+        description: Size 0f the page
+        schema:
+          type: number
+        in: query
+      - name: isDescendingOrder
+        description: ""
+        schema:
+          type: boolean
+        in: query
+      - name: sortName
+        description: sorting list
+        schema:
+          type: string
+        in: query
+      - name: queryString
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/integration_instance'
+              examples:
+                installed_integration_payload:
+                  value:
+                    results:
+                    - id: INTG-ad3c79cb-8e18-4399-8b0a-7bba245e0aac
+                      displayName: Email-intg
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps: []
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@3BmYRDD2a7rNjjuuSfdNR8pa.null
+                    - id: INTG-41416066-6119-4de6-83a0-542f88c1e6c8
+                      displayName: Email-Nagios
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: Critical-State-Identifier
+                        identifier: ^Critical
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: resource
+                            endValue: state
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: monitor
+                            endValue: metrics
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: Device
+                            endValue: needs
+                        - name: Subject
+                          defaultValue: The is  email Alerting example
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@3gafaZv4msZGU8m4dj9JZmAD.opsramp.net
+                    - id: INTG-46470947-23cb-4dda-83cf-34ab2abc77fd
+                      displayName: Nagious-email-watch
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: ^Critical
+                        identifier: ^Critcal
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_SUBJECT
+                            operator: BETWEEN
+                            startValue: A
+                            endValue: B
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 3
+                        name: Nagios
+                        displayName: Nagios
+                        techUid: NAGIOS
+                      emailAddress: alerts@9sdwFU2tpmFuajUNATs7c88z.opsramp.net
+                    - id: INTG-3d86c781-d2b0-45c2-a585-f8275e91897b
+                      displayName: Sensu-email-integration
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: "."
+                        identifier: "."
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Critical
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: MATCHES
+                            regexStr: "."
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: MATCHES
+                            regexStr: "."
+                      alertSource:
+                        id: 13
+                        name: Sensu
+                        displayName: Sensu
+                        techUid: SENSU
+                      emailAddress: alerts@HwH5yqU2casyg3N8TADwSmUh.opsramp.net
+                    - id: INTG-680a62cf-b64d-47da-ae48-d07c0808de6d
+                      displayName: Testemail
+                      integration:
+                        id: Email Alerts
+                        name: Email Alerts
+                      emailProps:
+                      - name: Critical-State-Rule
+                        identifier: Critical
+                        identifierSource: EMAIL_CONTENT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Device Host Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Service Name
+                          defaultValue: Unknown
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                      - name: Default Set
+                        identifier: "."
+                        identifierSource: EMAIL_SUBJECT
+                        properties:
+                        - name: Alert State
+                          defaultValue: Ok
+                          condition:
+                            contentSource: EMAIL_CONTENT
+                            operator: BETWEEN
+                            startValue: 'Severity:'
+                            endValue: ','
+                        - name: Device Host Name
+                          defaultValue: DEvice
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                        - name: Service Name
+                          defaultValue: Default_Metric
+                          condition:
+                            contentSource: DEFAULT_VALUE
+                      alertSource:
+                        id: 6
+                        name: Email Alerts
+                        displayName: Email Alerts
+                        techUid: Email Alerts
+                      emailAddress: alerts@jkpHMe95wP2v8Ff6eFKCeDvc.opsramp.net
+                    - id: INTG-a90ab22a-2809-4fc3-9c87-f9778edcda02
+                      integration:
+                        id: NEWRELIC
+                        name: NewRelic
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: deviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: currentState
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Ok
+                            thirdPartyAttrValue: OK
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: serviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                    - id: INTG-49ba2d50-1cb3-493f-b811-fb79aba4a5f4
+                      integration:
+                        id: PINGDOM
+                        name: Pingdom
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-6d518415-a784-4d77-9a7d-069cd8e51a8f
+                      integration:
+                        id: NEUSTAR
+                        name: Neustar
+                    - id: INTG-fb3ea6d1-6bdc-4795-9d58-08b8419f07d4
+                      integration:
+                        id: ALERTLOGIC
+                        name: Alert Logic
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: device
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: currentState
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: serviceName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                    - id: INTG-cc45ecef-1e57-41b6-92c0-4d91e9b83d48
+                      integration:
+                        id: SOLARWINDS
+                        name: Solarwinds
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-566ca668-ec8d-4d8b-9706-9c7775773466
+                      displayName: emc-Dell
+                      integration:
+                        id: DELLCOMPELLENT
+                        name: Dell Compellent
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-e0711795-1c09-43a2-ba3b-f45e93a6f63a
+                      integration:
+                        id: SCOM
+                        name: System Center Operations Manager
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: MonitoringObjectDisplayName
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: Description
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: Name
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: External alert ID
+                          attrName: alert.extAlertId
+                          thirdPartyAttrName: AlertId
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: State
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Critical
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Ok
+                            thirdPartyAttrValue: Ok
+                          - attrValue: Info
+                            thirdPartyAttrValue: Informational
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: MonitoringObjectFullName
+                          entityType: ALERT
+                          thirdPartyEntityType: Problem
+                          mode: INBOUND
+                    - id: INTG-22ded62b-7d10-4f2f-9f46-ac4f71c9ade2
+                      integration:
+                        id: OPSMANAGER
+                        name: OpsManager
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: EesREH6yEre8aysEYJmjANB2yWUzf8Eh
+                    - id: INTG-390844d9-a140-4181-89a5-6160a8192526
+                      displayName: Test-OEM
+                      integration:
+                        id: ORACLE
+                        name: Oracle
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-5dbddda9-4eae-4b52-9947-40b7dfa154c4
+                      integration:
+                        id: ZABBIX
+                        name: Zabbix
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: IP
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: Description
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: Subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: External alert ID
+                          attrName: alert.extAlertId
+                          thirdPartyAttrName: EventID
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: State
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Info
+                            thirdPartyAttrValue: Information
+                          - attrValue: Critical
+                            thirdPartyAttrValue: High
+                          - attrValue: Ok
+                            thirdPartyAttrValue: OK
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: Metric
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                    - id: INTG-b38f8b1c-48fc-4dc2-bdbb-3b3b15c88ce3
+                      integration:
+                        id: NAGIOS
+                        name: Nagios
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: f2Hut6GS9yTFcd29FE3HNzX8xBfDNCNf
+                    - id: INTG-a3ecddc2-3c8d-44d4-88d1-d3e69946fc85
+                      integration:
+                        id: OMS
+                        name: OMS
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-1cc80afc-05cd-4e01-bf76-c315091a0e02
+                      integration:
+                        id: ALARMTRAQ
+                        name: AlarmTraq
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: fc84DM4P2TgDk4nwKKfxDmmpcmrhk8dv
+                    - id: INTG-fb63e244-b782-4f67-83e3-4709af11c64f
+                      integration:
+                        id: APPDYNAMICS
+                        name: AppDynamics
+                      inboundConfig:
+                        authentication:
+                          authType: OAUTH2
+                          apiKeyPairs:
+                          - key: GmxhzZV4ZJRKvvvEGw4BVUwXjZFhNccG
+                    - id: INTG-ac75b590-f215-4b62-9e81-0cf65bf7e311
+                      integration:
+                        id: IRIS
+                        name: IRIS Network Systems
+                    - id: INTG-c66ba960-7c78-4106-82c6-358b6127b338
+                      integration:
+                        id: STACKDRIVER
+                        name: Stackdriver
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-97aaae04-3583-45e0-bb10-c0b925ef7e00
+                      integration:
+                        id: HPOMI
+                        name: Operations Manager i
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-c6ee171b-87b3-4369-a8b4-f6325739f568
+                      integration:
+                        id: DATADOG
+                        name: Datadog
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                    - id: INTG-f498f43c-740e-48ef-9a55-804344449ad8
+                      integration:
+                        id: PRISMAPUBLICCLOUD
+                        name: Prisma Public Cloud
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: resourceName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: policyDescription
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: policyName
+                          entityType: ALERT
+                          thirdPartyEntityType: alert
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: severity
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: high
+                          - attrValue: Warning
+                            thirdPartyAttrValue: medium
+                          - attrValue: Ok
+                            thirdPartyAttrValue: low
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: resourceCloudService
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: ""
+                            thirdPartyAttrValue: ""
+                        - name: Alert time
+                          attrName: alert.alertTime
+                          thirdPartyAttrName: sentTs
+                          entityType: ALERT
+                          thirdPartyEntityType: Alert
+                          mode: INBOUND
+                    - id: INTG-4b73b4cd-617e-413a-89de-005c7e6ae28f
+                      integration:
+                        id: SITE24X7
+                        name: Site24x7
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: MONITORNAME
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: 'MONITORNAME ($MONITORURL) $INCIDENT_REASON
+                            <br>FAILED_LOCATIONS : $FAILED_LOCATIONS <br> MONITOR_ID:
+                            $MONITOR_ID <br> OUTAGE_TIME_UNIX_FORMAT : $OUTAGE_TIME_UNIX_FORMAT
+                            <br> MONITOR_DASHBOARD_LINK :$MONITOR_DASHBOARD_LINK <br>
+                            TIMEZONE : $TIMEZONE <br> POLLFREQUENCY : $POLLFREQUENCY
+                            <br> INCIDENT_TIME : $INCIDENT_TIME <br> INCIDENT_TIME_ISO
+                            : $INCIDENT_TIME_ISO <br> RCA_LINK : $RCA_LINK'
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: MONITORNAME ($MONITORURL) $INCIDENT_REASON
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: STATUS
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: DOWN
+                          - attrValue: Warning
+                            thirdPartyAttrValue: CRITICAL
+                          - attrValue: Ok
+                            thirdPartyAttrValue: UP
+                          - attrValue: Info
+                            thirdPartyAttrValue: TROUBLE
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: MONITORTYPE
+                          entityType: ALERT
+                          thirdPartyEntityType: Incident
+                          mode: INBOUND
+                    - id: INTG-d6f1480b-be87-4778-bc50-aa86912d4f52
+                      integration:
+                        id: SOLARWINDSORION
+                        name: Solarwinds Orion
+                      inboundConfig:
+                        authentication:
+                          authType: WEBHOOK
+                        mapAttributes:
+                        - name: Alert resource name
+                          attrName: alert.deviceName
+                          thirdPartyAttrName: resourceName
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert description
+                          attrName: alert.description
+                          thirdPartyAttrName: description
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert subject
+                          attrName: alert.subject
+                          thirdPartyAttrName: subject
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                        - name: Alert state
+                          attrName: alert.currentState
+                          thirdPartyAttrName: status
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                          attrValues:
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Critical
+                          - attrValue: Warning
+                            thirdPartyAttrValue: Warning
+                          - attrValue: Info
+                            thirdPartyAttrValue: Informational
+                          - attrValue: Critical
+                            thirdPartyAttrValue: Serious
+                          - attrValue: Ok
+                            thirdPartyAttrValue: Notice
+                        - name: Alert metric
+                          attrName: alert.serviceName
+                          thirdPartyAttrName: object_type
+                          entityType: ALERT
+                          thirdPartyEntityType: Event
+                          mode: INBOUND
+                    totalResults: 26
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: false
+          description: success get al the available list.
+      summary: Details of an integration
+      description: 'Search from all the installed integrations '
+    delete:
+      requestBody:
+        description: uninstalls an installed integration with given UUID
+        content:
+          application/json:
+            schema:
+              type: string
+            examples:
+              uninstallReason:
+                value:
+                  uninstallReason: Integration not required
+        required: true
+      responses:
+        "200":
+          description: uninstalling the integration
+      operationId: uninstall
+      summary: Uninstalls the  installed integration
+    parameters:
+    - name: intgID
+      schema:
+        type: string
+      in: path
+      required: true
+  /integrations/installed/{installedIntgId}/event:
+    summary: Installed integration events in OpsRamp
+    description: Get the event of Opsramp entities like Resource,tickets
+    get:
+      parameters:
+      - name: installedIntgId
+        description: UUID for the integration
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/intgEvents'
+              examples:
+                update-incident-event:
+                  value:
+                    id: INTG-EVENT-10602432-8aa7-4eb2-ba3c-4d747c563ab4
+                    name: update event
+                    entity: INCIDENT
+                    notifier:
+                      baseURI: $baseURI/api/v2/tenants/client_86923/incidents
+                      authType: OAUTH2
+                      grantType: CLIENT_CREDENTIALS
+                      apiKey: nSYJ4GPWC63C7gXUDj7Wq5xdMQ9S4kbD
+                      accessTokenURL: https://kailash.opsramp.net/auth/oauth/token
+                    thirdPartyEventType: POST
+                    headers:
+                    - key: accept
+                      value: application/json
+                    - key: Content-Type
+                      value: application/json
+                    eventPayload: "{\n\t\"caller_id\": \"All Covered Technology Integrations\"\
+                      ,\n\t\"u_client\": \"$incident.client.name\",\n\t\"u_state\"\
+                      : \"$incident.status.name\",\n\t\"category\":\"$incident.entityCategory.categoryName\"\
+                      ,\n\t\"impact\": \"$incident.businessImpact.name\",\n\t\"urgency\"\
+                      : \"$incident.urgency.name\",\n\t\"u_ticket_source\":\"Integration\"\
+                      ,\n\t\"subject\": \"$incident.subject\",\n\t\"description\"\
+                      : \"$incident.impact\",\n\t\"opsramp_incident_id\": \"$incident.uniqueId\"\
+                      ,\n\t\"u_opsramp_client_id\": \"$incident.client.uniqueId\"\
+                      ,\n\t\"u_opsramp_assignee_group\": \"NOC Support\",\n\t\"u_sap_account_id\"\
+                      : \"$utils.extClientId($incident.client.id)\",\n\t\"u_sap_location_id\"\
+                      : \"$utils.locationDetails($incident.resources,\"description\"\
+                      )\",\n\t\"u_opsramp_priority\":\"$incident.priority.name\",\n\
+                      \         \"u_primary_ci\":\"$utils.resourceDetails($incident.resources,\"\
+                      uniqueId\")\",\n\t\"u_affected_cis\":\"$incident.deviceIds\"\
+                      ,\n\t\"work_notes\":\"\",\n\t\"u_substate\":\"$incident.reason.name\"\
+                      ,\n\t\"u_attachment\":\"$utils.attachmentData($incident.latestResponse.attachments)\"\
+                      ,\n\t\"u_file_name\":\"$utils.attachmentFileName($incident.latestResponse.attachments)\"\
+                      ,\n\t\"u_type\":\"$utils.attachmentFileType($incident.latestResponse.attachments)\"\
+                      \n}"
+                    responseHeaders:
+                    - key: extTicketId
+                      value: $id
+          description: Integration event
+      summary: Get  a event details of an installed integration for a tenant
+    post:
+      requestBody:
+        description: OpsRamp event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/intgEvents'
+            examples:
+              create_event:
+                value:
+                  name: Create event
+                  entity: INCIDENT
+                  eventType: CREATE
+                  notifier:
+                    type: SOAP_API
+                    baseURI: www.google.com
+                    authType: OAUTH2
+                    userName: testUser
+                    password: test
+                  endPointURI: www.google.com/update
+                  headers:
+                  - key: accept
+                    value: application/json
+                  - key: Content-Type
+                    value: application/json
+                  thirdPartyEventType: POST
+                  payload: ew0KInN1YmplY3QiOiIkaW5jaWRlbnQuc3ViamVjdCIsDQoiZGVzY3JpcHRpb24iOiIkaW5jaWRlbnQuaW1wYWN0IiwNCiJwcmlvcml0eSI6IiRpbmNpZGVudC5wcmlvcml0eS5uYW1lIg0KInN0YXV0cyI6ImhpZ2giDQp9
+              create-event-with-filter:
+                value:
+                  name: Create event with policy
+                  entity: INCIDENT
+                  eventType: CREATE
+                  filterCriteria:
+                    matchType: ANY
+                    rules:
+                    - key: Subject
+                      operator: Contains
+                      value: test
+                      resourceType: INCIDENT
+                    - key: Description
+                      operator: Contains
+                      value: testing
+                      resourceType: INCIDENT
+                  notifier:
+                    type: SOAP_API
+                    baseURI: www.google.com
+                    authType: OAUTH2
+                    userName: testUser
+                    password: test
+                  endPointURI: www.google.com/update
+                  headers:
+                  - key: accept
+                    value: application/json
+                  - key: Content-Type
+                    value: application/json
+                  thirdPartyEventType: POST
+                  payload: ew0KInN1YmplY3QiOiIkaW5jaWRlbnQuc3ViamVjdCIsDQoiZGVzY3JpcHRpb24iOiIkaW5jaWRlbnQuaW1wYWN0IiwNCiJwcmlvcml0eSI6IiRpbmNpZGVudC5wcmlvcml0eS5uYW1lIg0KInN0YXV0cyI6ImhpZ2giDQp9
+              create-alert-event:
+                value:
+                  name: Alert event test
+                  entity: ALERT
+                  eventType: CREATE
+                  notifier:
+                    type: SOAP_API
+                    baseURI: www.google.com
+                    authType: OAUTH2
+                    userName: testUser
+                    password: test
+                  endPointURI: www.google.com/update
+                  headers:
+                  - key: accept
+                    value: application/json
+                  - key: Content-Type
+                    value: application/json
+                  thirdPartyEventType: POST
+                  payload: ewoJInNlcnZpY2VOYW1lIjoiJGFsZXJ0LnNlcnZpY2VOYW1lIiwKCSJyZXNvdXJjZSI6ewoJCSJpZCI6IiRhbGVydC5yZXNvdXJjZUlkIgoJfSwKCSJzdWJqZWN0IjoiJGFsZXJ0LnN1YmplY3QiLAogICAgICAgICJjdXJyZW50U3RhdGUiOiIkYWxlcnQuY3VycmVudFN0YXRlIiwKCSJhcHAiOiJPUFNSQU1QIgp9
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/intgEvents'
+              examples:
+                incident-event:
+                  value: "{\n\t\"id\" : \"INTG-EVENT-debdf8a2-6986-4398-adfc-e50b185d049a\"\
+                    ,\n\t\"name\" : \"Create event\",\n\t\"entity\" : \"INCIDENT\"\
+                    ,\n\t\"notifier\" : {\n\t\t\"baseURI\" : \"www.google.com/update\"\
+                    ,\n\t\t\"authType\" : \"OAUTH2\",\n\t\t\"userName\" : \"testUser\"\
+                    \n\t},\n\t\"headers\" : [\n\t\t{\n\t\t\t\"key\" : \"accept\",\n\
+                    \t\t\t\"value\" : \"application/json\"\n\t\t},\n\t\t{\n\t\t\t\"\
+                    key\" : \"Content-Type\",\n\t\t\t\"value\" : \"application/json\"\
+                    \n\t\t}\n\t],\n\t\"eventPayload\" : \"{\\r\\n\"subject\":\"$incident.subject\"\
+                    ,\\r\\n\"description\":\"$incident.impact\",\\r\\n\"priority\"\
+                    :\"$incident.priority.name\"\\r\\n}\"\n}"
+                event-with-filter:
+                  value: "{\n\t\"id\" : \"INTG-EVENT-717000e9-bc95-4339-adf7-db7a43db2580\"\
+                    ,\n\t\"name\" : \"Create event with policy\",\n\t\"entity\" :\
+                    \ \"INCIDENT\",\n\t\"filterCriteria\" : {\n\t\t\"id\" : 140,\n\
+                    \t\t\"name\" : \"Create event with policy\",\n\t\t\"matchType\"\
+                    \ : \"ALL\",\n\t\t\"rules\" : [\n\t\t\t{\n\t\t\t\t\"id\" : 579,\n\
+                    \t\t\t\t\"key\" : \"Subject\",\n\t\t\t\t\"operator\" : \"Contains\"\
+                    ,\n\t\t\t\t\"value\" : \"test\",\n\t\t\t\t\"resourceType\" : \"\
+                    INCIDENT\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"id\" : 580,\n\t\t\t\t\
+                    \"key\" : \"Description\",\n\t\t\t\t\"operator\" : \"Contains\"\
+                    ,\n\t\t\t\t\"value\" : \"testing\",\n\t\t\t\t\"resourceType\"\
+                    \ : \"INCIDENT\"\n\t\t\t}\n\t\t],\n\t\t\"actions\" : []\n\t},\n\
+                    \t\"notifier\" : {\n\t\t\"baseURI\" : \"www.google.com/update\"\
+                    ,\n\t\t\"authType\" : \"OAUTH2\",\n\t\t\"userName\" : \"testUser\"\
+                    \n\t},\n\t\"headers\" : [\n\t\t{\n\t\t\t\"key\" : \"accept\",\n\
+                    \t\t\t\"value\" : \"application/json\"\n\t\t},\n\t\t{\n\t\t\t\"\
+                    key\" : \"Content-Type\",\n\t\t\t\"value\" : \"application/json\"\
+                    \n\t\t}\n\t],\n\t\"eventPayload\" : \"{\\r\\n\"subject\":\"$incident.subject\"\
+                    ,\\r\\n\"description\":\"$incident.impact\",\\r\\n\"priority\"\
+                    :\"$incident.priority.name\"\\r\\n\"stauts\":\"high\"\\r\\n}\"\
+                    \n}"
+                alert_event:
+                  value: |-
+                    {
+                        "id": "INTG-EVENT-61301956-5a04-405e-9ee1-03f62595ca05",
+                        "name": "Alert event test",
+                        "entity": "ALERT",
+                        "notifier": {
+                            "baseURI": "www.google.com/update",
+                            "authType": "OAUTH2",
+                            "userName": "testUser"
+                        },
+                        "thirdPartyEventType": "POST",
+                        "headers": [
+                            {
+                                "key": "accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "eventPayload": "{\n\t"serviceName":"$alert.serviceName",\n\t"resource":{\n\t\t"id":"$alert.resourceId"\n\t},\n\t"subject":"$alert.subject",\n        "currentState":"$alert.currentState",\n\t"app":"OPSRAMP"\n}"
+                    }
+          description: Incident event create
+      summary: Create  an outbound event on a installed integration
+    parameters:
+    - name: installedIntgId
+      description: UUID for the integration
+      schema:
+        type: string
+      in: path
+      required: true
+  /integrations/installed/{installedIntgId}/event/{eventID}:
+    summary: Details of a given Integration event
+    get:
+      parameters:
+      - examples:
+          intg-uuid:
+            value: '"INTG-24f0fabd-02df-4a83-a93a-f4155f58ddb8"'
+        name: installedIntgId
+        schema:
+          type: string
+        in: path
+        required: true
+      - examples:
+          event-id:
+            value: '"INTG-EVENT-0e85ed91-35b7-4fe8-a702-45fab935961c"'
+        name: eventID
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/intgEvents'
+              examples:
+                integration-event:
+                  value:
+                    id: INTG-EVENT-10602432-8aa7-4eb2-ba3c-4d747c563ab4
+                    name: update event
+                    entity: INCIDENT
+                    notifier:
+                      baseURI: $baseURI/api/v2/tenants/client_86923/incidents
+                      authType: OAUTH2
+                      grantType: CLIENT_CREDENTIALS
+                      apiKey: nSYJ4GPWC63C7gXUDj7Wq5xdMQ9S4kbD
+                      accessTokenURL: https://kailash.opsramp.net/auth/oauth/token
+                    thirdPartyEventType: POST
+                    headers:
+                    - key: accept
+                      value: application/json
+                    - key: Content-Type
+                      value: application/json
+                    eventPayload: "{\n\t\"caller_id\": \"All Covered Technology Integrations\"\
+                      ,\n\t\"u_client\": \"$incident.client.name\",\n\t\"u_state\"\
+                      : \"$incident.status.name\",\n\t\"category\":\"$incident.entityCategory.categoryName\"\
+                      ,\n\t\"impact\": \"$incident.businessImpact.name\",\n\t\"urgency\"\
+                      : \"$incident.urgency.name\",\n\t\"u_ticket_source\":\"Integration\"\
+                      ,\n\t\"subject\": \"$incident.subject\",\n\t\"description\"\
+                      : \"$incident.impact\",\n\t\"opsramp_incident_id\": \"$incident.uniqueId\"\
+                      ,\n\t\"u_opsramp_client_id\": \"$incident.client.uniqueId\"\
+                      ,\n\t\"u_opsramp_assignee_group\": \"NOC Support\",\n\t\"u_sap_account_id\"\
+                      : \"$utils.extClientId($incident.client.id)\",\n\t\"u_sap_location_id\"\
+                      : \"$utils.locationDetails($incident.resources,\"description\"\
+                      )\",\n\t\"u_opsramp_priority\":\"$incident.priority.name\",\n\
+                      \         \"u_primary_ci\":\"$utils.resourceDetails($incident.resources,\"\
+                      uniqueId\")\",\n\t\"u_affected_cis\":\"$incident.deviceIds\"\
+                      ,\n\t\"work_notes\":\"\",\n\t\"u_substate\":\"$incident.reason.name\"\
+                      ,\n\t\"u_attachment\":\"$utils.attachmentData($incident.latestResponse.attachments)\"\
+                      ,\n\t\"u_file_name\":\"$utils.attachmentFileName($incident.latestResponse.attachments)\"\
+                      ,\n\t\"u_type\":\"$utils.attachmentFileType($incident.latestResponse.attachments)\"\
+                      \n}"
+                    responseHeaders:
+                    - key: extTicketId
+                      value: $id
+          description: Describes an output event
+      summary: Get  a particular event details of an installed integration
+    parameters:
+    - name: installedIntgId
+      in: path
+      required: true
+    - name: eventID
+      in: path
+      required: true
+  /integrations/installed/{installedIntgId}/event/{eventID}/activate:
+    post:
+      parameters:
+      - name: installedIntgId
+        in: path
+        required: true
+      - name: eventID
+        in: path
+        required: true
+      responses:
+        "200":
+          description: activates an event
+      summary: Activate a disabled event of an installed integration
+    parameters:
+    - name: installedIntgId
+      schema:
+        type: string
+      in: path
+      required: true
+    - name: eventID
+      schema:
+        type: string
+      in: path
+      required: true
+  /integrations/installed/{installedIntgId}/event/{eventID}/deactive:
+    post:
+      parameters:
+      - name: installedIntgId
+        in: path
+        required: true
+      - name: eventID
+        in: path
+        required: true
+      responses:
+        "200":
+          description: deactivates an event
+      summary: Deactive a enabled event of an installed integration
+    parameters:
+    - name: installedIntgId
+      schema:
+        type: string
+      in: path
+      required: true
+    - name: eventID
+      schema:
+        type: string
+      in: path
+      required: true
+  /integrations/installed/{intgID}/inbound/authentication:
+    post:
+      requestBody:
+        description: Updated authentication payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authentication'
+            examples:
+              webhook-auth-role-update:
+                value:
+                  authType: WEBHOOK
+                  role:
+                    uniqueId: ROLE-3a837b66-d070-11e9-aec5-525400f5efd3
+                    name: Intg SDesk_Device Manage
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication'
+              examples:
+                webhook-tokens:
+                  value:
+                    authType: WEBHOOK
+                    token: 7ygh9QFkbNAfQ2QUz7q4rU2BpD2QmdNR
+                    role:
+                      uniqueId: ROLE-3a837b66-d070-11e9-aec5-525400f5efd3
+                      name: Intg SDesk_Device Manage
+          description: Updated authentication with token details
+      operationId: update-authentication
+      summary: Update the given authentication flow and role associated with the installed
+        integration
+    parameters:
+    - name: intgID
+      in: path
+      required: true
+  /integrations/installed/{intgID}/mapping-attr:
+    get:
+      parameters:
+      - name: intgID
+        in: path
+        required: true
+      - name: entity
+        description: ""
+        schema:
+          enum:
+          - INCIDENT
+          - SERVICEREQUEST
+          - CHANGE
+          - PROBLEM
+          - TASK
+          type: string
+        in: query
+        required: true
+      - name: name
+        description: OpsRamp mapping attribute name
+        schema:
+          type: string
+        in: query
+      - name: intgMode
+        description: Mode we have is inbound or outbound
+        schema:
+          enum:
+          - INBOUND
+          - OUTBOUND
+          type: string
+        in: query
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mapAttributesArray'
+              examples:
+                mapped-attibutes:
+                  value:
+                  - name: Status
+                    attrName: incident.status.name
+                    thirdPartyAttrName: Status
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: INBOUND
+                    attrValues:
+                    - attrValue: Open
+                      thirdPartyAttrValue: In Progress
+                    - attrValue: Closed
+                      thirdPartyAttrValue: Completed
+                  - name: Priority
+                    attrName: incident.priority.name
+                    thirdPartyAttrName: severity
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: INBOUND
+                    attrValues:
+                    - attrValue: High
+                      thirdPartyAttrValue: Max
+                    - attrValue: Low
+                      thirdPartyAttrValue: min
+                  - name: Status
+                    attrName: incident.status.name
+                    thirdPartyAttrName: stats
+                    entityType: INCIDENT
+                    thirdPartyEntityType: Ticket
+                    mode: OUTBOUND
+                    attrValues:
+                    - attrValue: Open
+                      thirdPartyAttrValue: good
+          description: Get outbound mapping attributes
+      summary: Details of outbound mapping of an installed integration
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mapper-container'
+        required: false
+      parameters:
+      - name: intgID
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mapAttributesArray'
+              examples:
+                inbound-update:
+                  value:
+                  - name: Status
+                    attrName: incident.status.name
+                    thirdPartyAttrName: Status
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: INBOUND
+                    attrValues:
+                    - attrValue: Open
+                      thirdPartyAttrValue: In Progress-in Open
+                    - attrValue: Closed
+                      thirdPartyAttrValue: Completed
+                    - attrValue: Open
+                      thirdPartyAttrValue: good
+                  - name: Priority
+                    attrName: incident.priority.name
+                    thirdPartyAttrName: severity
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: INBOUND
+                    attrValues:
+                    - attrValue: High
+                      thirdPartyAttrValue: Max
+                    - attrValue: Low
+                      thirdPartyAttrValue: min
+                  - name: Resource Type
+                    attrName: defaultresource.resourceTag.name
+                    thirdPartyAttrName: Test
+                    entityType: DEFAULT_RESOURCE
+                    thirdPartyEntityType: Test
+                    mode: OUTBOUND
+                    attrValues:
+                    - attrValue: Desktop
+                      thirdPartyAttrValue: Docker
+                    - attrValue: Docker
+                      thirdPartyAttrValue: Desktop
+                    - attrValue: Linux Server
+                      thirdPartyAttrValue: Windows Server
+                    - attrValue: Windows Server
+                      thirdPartyAttrValue: Linux Server
+                  - name: Status
+                    attrName: incident.status.name
+                    thirdPartyAttrName: Status
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: OUTBOUND
+                    attrValues:
+                    - attrValue: Open
+                      thirdPartyAttrValue: In Progress-in Open
+                    - attrValue: Closed
+                      thirdPartyAttrValue: Completed
+                    - attrValue: Open
+                      thirdPartyAttrValue: good
+                  - name: Priority
+                    attrName: incident.priority.name
+                    thirdPartyAttrName: severity
+                    entityType: INCIDENT
+                    thirdPartyEntityType: TICKET
+                    mode: OUTBOUND
+                    attrValues:
+                    - attrValue: High
+                      thirdPartyAttrValue: Max
+                    - attrValue: Low
+                      thirdPartyAttrValue: min
+          description: Updating the mapping attributes
+      operationId: outbound-map-attr
+      summary: updating the mappings attributes
+    parameters:
+    - name: intgID
+      schema:
+        type: string
+      in: path
+      required: true
+components:
+  schemas:
+    integration_container:
+      title: Root Type for integration_container
+      description: Data model for integration
+      required:
+      - integration
+      - logo
+      type: object
+      properties:
+        id:
+          type: string
+        displayName:
+          type: string
+        integration:
+          $ref: '#/components/schemas/integration_name'
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        category:
+          type: string
+        alertSource:
+          $ref: '#/components/schemas/alertSource'
+          properties:
+            id:
+              format: int32
+              type: integer
+            name:
+              type: string
+            displayName:
+              type: string
+            techUid:
+              type: string
+        logo:
+          $ref: '#/components/schemas/logos'
+          description: 'logo for the installed integration '
+        parentIntg:
+          $ref: '#/components/schemas/key'
+          description: Inheritance proeprty for the integration
+        direction:
+          description: ""
+          type: string
+        inboundConfig:
+          $ref: '#/components/schemas/inboundConfig'
+          description: Optional inbound configuration for custom inteegrations
+        outboundConfig:
+          $ref: '#/components/schemas/outboundConfig'
+          description: Optional outbound configurations
+        singleSignOnAuthentication:
+          $ref: '#/components/schemas/SSO_configs'
+          description: ""
+      example:
+        id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
+        displayName: API Testing
+        integration:
+          id: CUSTOM
+          name: Custom
+        category: Monitoring
+        alertSource:
+          id: 30
+          name: Custom
+          displayName: Custom
+          techUid: CUSTOM
+    integration_type:
+      description: Determines the type of  integration  to install
+      required:
+      - displayName
+      - category
+      type: object
+      properties:
+        displayName:
+          description: ""
+          type: string
+        category:
+          description: ""
+          type: string
+    alertSource:
+      description: ""
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          description: integration unique id
+          type: integer
+        name:
+          description: ""
+          type: string
+        displayName:
+          description: ""
+          type: string
+        techUid:
+          description: ""
+          type: string
+      example:
+        id: 30
+        name: Custom
+        displayName: Custom
+        techUid: CUSTOM
+    integration_name:
+      description: ""
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          description: ""
+          type: string
+        name:
+          description: ""
+          type: string
+    integration_list:
+      description: ""
+      type: object
+      properties:
+        integration_names_list:
+          description: ""
+          type: array
+          items:
+            $ref: '#/components/schemas/integration_name'
+    authentication:
+      title: Root Type for authentication
+      description: Authentication model of the integration
+      required:
+      - authType
+      - role
+      type: object
+      properties:
+        authType:
+          enum:
+          - ALL
+          - WEBHOOK
+          - OAUTH2
+          type: string
+        token:
+          type: string
+        apiKeyPairs:
+          description: apikey pair values
+          type: array
+          items:
+            $ref: '#/components/schemas/key'
+        role:
+          $ref: '#/components/schemas/role'
+          description: ""
+      example:
+        authType: ALL
+        token: some text
+        apiKeyPairs:
+        - {}
+        - {}
+    key:
+      description: key value pairs
+      type: object
+      example:
+        key: KZeBJ5jHyKab6Rce8VNzG9sfMDH9xqxJ
+    inboundConfig:
+      title: Root Type for inboundConfig
+      description: inbound config model
+      type: object
+      properties:
+        authentication:
+          $ref: '#/components/schemas/authentication'
+          properties:
+            authType:
+              type: string
+            apiKeyPairs:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+        mapAttributes:
+          $ref: '#/components/schemas/mapAttributesArray'
+          description: ""
+      example:
+        authentication:
+          authType: OAUTH2
+          apiKeyPairs:
+          - key: 3wXY27sjyf23fWFHB6c7zRU4v4Yv6wzG
+        mapAttributes:
+        - name: Status
+          attrName: serviceRequest.status.name
+          thirdPartyAttrName: Status
+          entityType: SERVICEREQUEST
+          thirdPartyEntityType: SRQ
+          mode: INBOUND
+          attrValues:
+          - attrValue: Open
+            thirdPartyAttrValue: In Progress
+          - attrValue: Closed
+            thirdPartyAttrValue: Completed
+        - name: Status
+          attrName: incident.status.name
+          thirdPartyAttrName: Status
+          entityType: INCIDENT
+          thirdPartyEntityType: TICKET
+          mode: INBOUND
+          attrValues:
+          - attrValue: Open
+            thirdPartyAttrValue: In Progress
+          - attrValue: Closed
+            thirdPartyAttrValue: Completed
+        - name: Priority
+          attrName: incident.priority.name
+          thirdPartyAttrName: severity
+          entityType: INCIDENT
+          thirdPartyEntityType: TICKET
+          mode: INBOUND
+          attrValues:
+          - attrValue: High
+            thirdPartyAttrValue: Max
+          - attrValue: Low
+            thirdPartyAttrValue: min
+        - name: Priority
+          attrName: serviceRequest.priority.name
+          thirdPartyAttrName: severity
+          entityType: SERVICEREQUEST
+          thirdPartyEntityType: SRQ
+          mode: INBOUND
+          attrValues:
+          - attrValue: High
+            thirdPartyAttrValue: Max
+          - attrValue: Low
+            thirdPartyAttrValue: min
+    headers:
+      title: Root Type for headers
+      description: Supported headers format
+      type: array
+      items:
+        $ref: '#/components/schemas/key-value'
+      example:
+      - key: Accept
+        value: application/json
+      - key: Content-Type
+        value: application/json
+    key-value:
+      title: Root Type for key-value
+      description: Data type for key values
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      example:
+        key: Accept
+        value: application/json
+    Model_2_vars:
+      title: Root Type for Model_2_vars
+      description: Model for 2 variables
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        variable-3:
+          description: '            '
+          type: string
+      example:
+        id: INTG-EVENT-1a13f08d-a364-4a99-a510-7889198a4377
+        name: Test-Fresh-Service
+    Model_3_vars:
+      title: Root Type for Model_2_vars
+      description: Model for 2 variables
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      example:
+        id: INTG-EVENT-1a13f08d-a364-4a99-a510-7889198a4377
+        name: Test-Fresh-Service
+    intgEvents:
+      title: Root Type for intgEvents
+      description: ""
+      required:
+      - entity
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        entity:
+          enum:
+          - INCIDENT
+          - RESOURCE
+          type: string
+        notifier:
+          $ref: '#/components/schemas/key'
+          properties:
+            baseURI:
+              type: string
+        thirdPartyEventType:
+          enum:
+          - POST
+          - GET
+          - UPDATE
+          type: string
+        headers:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        eventPayload:
+          type: string
+        responseHeaders:
+          description: Response header values
+          type: array
+          items:
+            $ref: '#/components/schemas/responseHeader'
+      example:
+        id: INTG-EVENT-1a13f08d-a364-4a99-a510-7889198a4377
+        name: Test-Fresh-Service
+        entity: INCIDENT
+        notifier:
+          baseURI: https://ipl.freshservice.com/helpdesk/tickets.json
+        thirdPartyEventType: POST
+        headers:
+        - key: Accept
+          value: application/json
+        - key: Content-Type
+          value: application/json
+        eventPayload: |-
+          {
+            "helpdesk_ticket":{
+                "description":"Some details on the issue ...",
+                "subject":"Support needed..",
+                "email":"hulk@outerspace.com",
+                "priority":1, "status":2, "source":2,"ticket_type":"Incident"
+            },
+            "cc_emails":"superman@marvel.com,avengers@marvel.com"
+          }
+    integration_instance:
+      title: Root Type for integration_instance
+      description: Model of a given installed integration
+      type: object
+      properties:
+        id:
+          description: unique UUID representation of an integration when installed
+            in the platform
+          type: string
+        integration:
+          $ref: '#/components/schemas/integration_name'
+          description: Integration instances brief details
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        inboundConfig:
+          $ref: '#/components/schemas/inboundConfig'
+          description: Inbound configurations
+          properties:
+            authentication:
+              type: object
+              properties:
+                authType:
+                  type: string
+                apiKeyPairs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+            mapAttributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  attrName:
+                    type: string
+                  thirdPartyAttrName:
+                    type: string
+                  entityType:
+                    type: string
+                  thirdPartyEntityType:
+                    type: string
+                  mode:
+                    type: string
+                  attrValues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attrValue:
+                          type: string
+                        thirdPartyAttrValue:
+                          type: string
+        outboundConfig:
+          $ref: '#/components/schemas/outboundConfig'
+          description: Integration outbound configurations if any
+          properties:
+            baseNotifier:
+              type: object
+              properties:
+                baseURI:
+                  type: string
+                authType:
+                  type: string
+                grantType:
+                  type: string
+                userName:
+                  type: string
+                apiKey:
+                  type: string
+                accessTokenURL:
+                  type: string
+            mapAttributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  attrName:
+                    type: string
+                  thirdPartyAttrName:
+                    type: string
+                  entityType:
+                    type: string
+                  thirdPartyEntityType:
+                    type: string
+                  mode:
+                    type: string
+                  attrValues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attrValue:
+                          type: string
+                        thirdPartyAttrValue:
+                          type: string
+            intgEvents:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  entity:
+                    type: string
+                  notifier:
+                    type: object
+                    properties:
+                      baseURI:
+                        type: string
+                  thirdPartyEventType:
+                    type: string
+                  headers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                        value:
+                          type: string
+                  eventPayload:
+                    type: string
+        displayName:
+          description: Display name of any custom Integration
+          type: string
+        emailConfigurations:
+          $ref: '#/components/schemas/emailconfiguration'
+          description: This model shows the email configuration
+        singleSignOnAuthentication:
+          $ref: '#/components/schemas/SSO_configs'
+          description: In case SSO integrations properties are used to get.
+      example:
+        id: INTG-519ad3f6-0954-47b8-b306-20f78dcb937a
+        integration:
+          id: SERVICENOW
+          name: ServiceNow
+        inboundConfig:
+          authentication:
+            authType: OAUTH2
+            apiKeyPairs:
+            - key: 3wXY27sjyf23fWFHB6c7zRU4v4Yv6wzG
+          mapAttributes:
+          - name: Status
+            attrName: serviceRequest.status.name
+            thirdPartyAttrName: Status
+            entityType: SERVICEREQUEST
+            thirdPartyEntityType: SRQ
+            mode: INBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: In Progress
+            - attrValue: Closed
+              thirdPartyAttrValue: Completed
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: Status
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: In Progress
+            - attrValue: Closed
+              thirdPartyAttrValue: Completed
+          - name: Priority
+            attrName: incident.priority.name
+            thirdPartyAttrName: severity
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: High
+              thirdPartyAttrValue: Max
+            - attrValue: Low
+              thirdPartyAttrValue: min
+          - name: Priority
+            attrName: serviceRequest.priority.name
+            thirdPartyAttrName: severity
+            entityType: SERVICEREQUEST
+            thirdPartyEntityType: SRQ
+            mode: INBOUND
+            attrValues:
+            - attrValue: High
+              thirdPartyAttrValue: Max
+            - attrValue: Low
+              thirdPartyAttrValue: min
+        outboundConfig:
+          baseNotifier:
+            baseURI: www.google.com
+            authType: OAUTH2
+            grantType: PASSWORD
+            userName: testUser
+            apiKey: 6h67PAAFscVPMwhQZFcshpcqN5b6pyU9
+            accessTokenURL: www.token.com/cred
+          mapAttributes:
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: stats
+            entityType: INCIDENT
+            thirdPartyEntityType: Ticket
+            mode: OUTBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: good
+          intgEvents:
+          - id: INTG-EVENT-c813723d-ddf8-4aae-bd08-fefa4836d452
+            name: Create event
+            entity: INCIDENT
+            notifier:
+              baseURI: www.google.com
+            thirdPartyEventType: POST
+            headers:
+            - key: accept
+              value: application/json
+            - key: Content-Type
+              value: application/json
+            eventPayload: "{\r\n\"subject\":\"$incident.subject\",\r\n\"description\"\
+              :\"$incident.impact\",\r\n\"priority\":\"$incident.priority.name\"\r\
+              \n\"stauts\":\"high\"\r\n}"
+    outboundConfig:
+      title: Root Type for outboundConfig
+      description: Outbound configuration of the integration
+      required:
+      - baseNotifier
+      type: object
+      properties:
+        intgEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/intgEvents'
+        baseNotifier:
+          $ref: '#/components/schemas/baseNotifier'
+          description: outbound payload with base notifier
+        mapAttributes:
+          $ref: '#/components/schemas/mapAttributesArray'
+          description: Mapping entities
+      example:
+        intgEvents:
+        - id: INTG-EVENT-1a13f08d-a364-4a99-a510-7889198a4377
+          name: Test-Fresh-Service
+          entity: INCIDENT
+          notifier:
+            baseURI: https://ipl.freshservice.com/helpdesk/tickets.json
+          thirdPartyEventType: POST
+          headers:
+          - key: Accept
+            value: application/json
+          - key: Content-Type
+            value: application/json
+          eventPayload: |-
+            {
+              "helpdesk_ticket":{
+                  "description":"Some details on the issue ...",
+                  "subject":"Support needed..",
+                  "email":"hulk@outerspace.com",
+                  "priority":1, "status":2, "source":2,"ticket_type":"Incident"
+              },
+              "cc_emails":"superman@marvel.com,avengers@marvel.com"
+            }
+    role:
+      title: Root Type for role
+      description: Role association model
+      required:
+      - uniqueId
+      type: object
+      properties:
+        uniqueId:
+          type: string
+        name:
+          type: string
+      example:
+        uniqueId: ROLE-4d64a7ca-20ca-7c7c-e439-3977aa9c87a4
+        name: Client Administrator
+    mapper:
+      title: Root Type for mapper
+      description: Mapping list
+      required:
+      - mode
+      type: object
+      properties:
+        name:
+          type: string
+        attrName:
+          type: string
+        thirdPartyAttrName:
+          type: string
+        entityType:
+          enum:
+          - ALERT
+          - INCIDENT
+          - PROBLEM
+          type: string
+        thirdPartyEntityType:
+          type: string
+        mode:
+          enum:
+          - INBOUND
+          - OUTBOUND
+          type: string
+        attrValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/key-value'
+      example:
+        name: Status
+        attrName: incident.status.name
+        thirdPartyAttrName: stats
+        entityType: INCIDENT
+        thirdPartyEntityType: Ticket
+        mode: OUTBOUND
+        attrValues:
+        - attrValue: Open
+          thirdPartyAttrValue: good
+    baseNotifier:
+      title: Root Type for baseNotifier
+      description: 'Outbound base configurations '
+      type: object
+      properties:
+        baseURI:
+          enum:
+          - REFRESH_TOKEN
+          - PASSWORD
+          - CLIENT_CREDENTIALS
+          type: string
+        authType:
+          type: string
+        grantType:
+          type: string
+        userName:
+          type: string
+        apiKey:
+          type: string
+        accessTokenURL:
+          type: string
+      example:
+        baseURI: www.google.com
+        authType: OAUTH2
+        grantType: PASSWORD
+        userName: testUser
+        apiKey: 6h67PAAFscVPMwhQZFcshpcqN5b6pyU9
+        accessTokenURL: www.token.com/cred
+    mapAttributesArray:
+      title: Root Type for mapAttributes
+      description: Mapping attributes model
+      type: array
+      items:
+        $ref: '#/components/schemas/mapper'
+      example:
+      - name: Alert resource name
+        attrName: alert.deviceName
+        thirdPartyAttrName: device
+        entityType: ALERT
+        thirdPartyEntityType: alert
+        mode: INBOUND
+      - name: Alert description
+        attrName: alert.description
+        thirdPartyAttrName: description
+        entityType: ALERT
+        thirdPartyEntityType: alert
+        mode: INBOUND
+      - name: Alert subject
+        attrName: alert.subject
+        thirdPartyAttrName: subject
+        entityType: ALERT
+        thirdPartyEntityType: alert
+        mode: INBOUND
+      - name: Alert state
+        attrName: alert.currentState
+        thirdPartyAttrName: currentState
+        entityType: ALERT
+        thirdPartyEntityType: alert
+        mode: INBOUND
+        attrValues:
+        - attrValue: ""
+          thirdPartyAttrValue: ""
+      - name: Alert metric
+        attrName: alert.serviceName
+        thirdPartyAttrName: serviceName
+        entityType: ALERT
+        thirdPartyEntityType: alert
+        mode: INBOUND
+        attrValues:
+        - attrValue: ""
+          thirdPartyAttrValue: ""
+    emailconfiguration:
+      title: Root Type for emailconfiguration
+      description: This model represents the email configuration alerting
+      required:
+      - alertSource
+      type: object
+      properties:
+        emailProps:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailProperty'
+        alertSource:
+          $ref: '#/components/schemas/alertSource'
+          properties:
+            id:
+              format: int32
+              type: integer
+            name:
+              type: string
+            displayName:
+              type: string
+            techUid:
+              type: string
+        emailAddress:
+          type: string
+      example:
+        emailProps:
+        - name: Critical-State-Rule
+          identifier: Critical
+          identifierSource: EMAIL_SUBJECT
+          properties:
+          - name: Alert State
+            defaultValue: Ok
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Severity:'
+              endValue: ','
+          - name: Device Host Name
+            defaultValue: Unknown
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Hostname:'
+              endValue: ','
+          - name: Service Name
+            defaultValue: Unknown
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Metric Name:'
+              endValue: ','
+        - name: Default Set
+          identifier: "."
+          identifierSource: EMAIL_SUBJECT
+          properties:
+          - name: Alert State
+            defaultValue: Ok
+            condition:
+              contentSource: DEFAULT_VALUE
+          - name: Device Host Name
+            defaultValue: Default_Device
+            condition:
+              contentSource: DEFAULT_VALUE
+          - name: Service Name
+            defaultValue: Default_Metric
+            condition:
+              contentSource: DEFAULT_VALUE
+        alertSource:
+          id: 188
+          name: Test Source
+          displayName: Test Alert Source
+          techUid: TESTSOURCE
+        emailAddress: alerts@6hU3YCVwEtNXZDzv2jWTbRBn.opsramp.net
+    emailProperty:
+      description: All the email parsing logic configurations
+      required:
+      - name
+      - defaultValue
+      type: object
+      properties:
+        name:
+          description: ""
+          type: string
+        defaultValue:
+          description: ""
+          type: string
+        condition:
+          $ref: '#/components/schemas/attribute_parser_condition'
+          description: ""
+      example:
+        name: Alert State
+        defaultValue: Ok
+        condition:
+          contentSource: EMAIL_CONTENT
+          operator: BETWEEN
+          startValue: 'Severity:'
+          endValue: ','
+    email_default_config:
+      title: Root Type for email_default_config
+      description: ""
+      required:
+      - properties
+      type: object
+      properties:
+        name:
+          type: string
+        identifier:
+          type: string
+        identifierSource:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailProperty'
+      example:
+        name: Default Set
+        identifier: "."
+        identifierSource: EMAIL_SUBJECT
+        properties:
+        - name: Alert State
+          defaultValue: Ok
+          condition:
+            contentSource: DEFAULT_VALUE
+        - name: Device Host Name
+          defaultValue: Default_Device
+          condition:
+            contentSource: DEFAULT_VALUE
+        - name: Service Name
+          defaultValue: Default_Metric
+          condition:
+            contentSource: DEFAULT_VALUE
+    attribute_parser:
+      title: Root Type for attribute_parser
+      description: Model represents the how attributes are parsed
+      required:
+      - condition
+      type: object
+      properties:
+        name:
+          type: string
+        defaultValue:
+          type: string
+        condition:
+          $ref: '#/components/schemas/attribute_parser_condition'
+          properties:
+            contentSource:
+              type: string
+            operator:
+              type: string
+            startValue:
+              type: string
+            endValue:
+              type: string
+      example:
+        name: Alert State
+        defaultValue: Ok
+        condition:
+          contentSource: EMAIL_CONTENT
+          operator: BETWEEN
+          startValue: 'Severity:'
+          endValue: ','
+    parser_condition_logic:
+      title: Root Type for parser_condition_logic
+      description: ""
+      type: object
+      properties:
+        contentSource:
+          type: string
+        operator:
+          type: string
+        startValue:
+          type: string
+        endValue:
+          type: string
+      example:
+        contentSource: EMAIL_CONTENT
+        operator: BETWEEN
+        startValue: 'Severity:'
+        endValue: ','
+    attribute_parser_condition:
+      title: Root Type for attribute_parser_condition
+      description: The parsing condition defintion
+      type: object
+      properties:
+        contentSource:
+          type: string
+        operator:
+          type: string
+        startValue:
+          type: string
+        endValue:
+          type: string
+      example:
+        contentSource: EMAIL_CONTENT
+        operator: BETWEEN
+        startValue: 'Severity:'
+        endValue: ','
+    email_generic_config:
+      title: Root Type for email_default_config
+      description: ""
+      required:
+      - properties
+      type: object
+      properties:
+        name:
+          type: string
+        identifier:
+          type: string
+        identifierSource:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailProperty'
+      example:
+        name: Critical-State-Rule
+        identifier: Critical
+        identifierSource: EMAIL_SUBJECT
+        properties:
+        - name: Alert State
+          defaultValue: Ok
+          condition:
+            contentSource: EMAIL_CONTENT
+            operator: BETWEEN
+            startValue: 'Severity:'
+            endValue: ','
+        - name: Device Host Name
+          defaultValue: Unknown
+          condition:
+            contentSource: EMAIL_CONTENT
+            operator: BETWEEN
+            startValue: 'Hostname:'
+            endValue: ','
+        - name: Service Name
+          defaultValue: Unknown
+          condition:
+            contentSource: EMAIL_CONTENT
+            operator: BETWEEN
+            startValue: 'Metric Name:'
+            endValue: ','
+    logos:
+      title: Root Type for logos
+      description: Define logo for the installed integrations
+      type: object
+      properties:
+        name:
+          type: string
+        file:
+          type: string
+      example:
+        name: test.png
+        file: /9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUSExMVFhUVGBcXFhcYGBgaFxgVFRUYFxcYFRcYHSggHh8lGxsXIjEiJSkrLi4wFx8zODMtOCgtLisBCgoKDg0OGxAQGy0lICYtLS0tLy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAHABwwMBEQACEQEDEQH/xAAcAAEAAgIDAQAAAAAp8j1D+zC/vI1R5usr1w5LeIXrhyW8RLd0GZTzYzPDR9FmJ/EcB5FdNOFM/FLppwpn45SvJ2S4oBaNgF9p2uPeSu3HirSPww7seKuOPwwzFo0EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQf//Z
+    SSO_configs:
+      title: Root Type for SSO_configs
+      description: SSO realated configurations
+      type: object
+      properties:
+        type:
+          type: string
+        issuerUrl:
+          type: string
+        redirectionUrl:
+          type: string
+        logoutUrl:
+          type: string
+      example:
+        type: Okta
+        issuerUrl: https://localhost.com
+        redirectionUrl: https://localhost.com
+        logoutUrl: https://localhost.com
+    eventrule:
+      title: Root Type for eventrule
+      description: 'This describes the rule defined '
+      type: object
+      properties:
+        key:
+          type: string
+        operator:
+          type: string
+        value:
+          type: string
+        resourceType:
+          type: string
+      example:
+        key: Subject
+        operator: Contains
+        value: test
+        resourceType: INCIDENT
+    filterCriteria:
+      title: Root Type for filterCriteria
+      description: 'Filtering out the relevant events '
+      type: object
+      properties:
+        matchType:
+          enum:
+          - ANY
+          - OR
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/eventrule'
+      example:
+        matchType: ANY
+        rules:
+        - key: Subject
+          operator: Contains
+          value: test
+          resourceType: INCIDENT
+        - key: Description
+          operator: Contains
+          value: testing
+          resourceType: INCIDENT
+    ops_event:
+      title: Root Type for ops_event
+      description: ""
+      type: object
+      properties:
+        name:
+          type: string
+        entity:
+          enum:
+          - INCIDENT
+          - SERVICEREQUEST
+          - CHANGE
+          - PROBLEM
+          - TASK
+          - RESOURCE
+          - ALERT
+          type: string
+        eventType:
+          enum:
+          - NONE
+          - CREATE
+          - UPDATE
+          - DELETE
+          type: string
+        filterCriteria:
+          $ref: '#/components/schemas/filterCriteria'
+          properties:
+            matchType:
+              type: string
+            rules:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  operator:
+                    type: string
+                  value:
+                    type: string
+                  resourceType:
+                    type: string
+        notifier:
+          $ref: '#/components/schemas/baseNotifier'
+          properties:
+            type:
+              type: string
+            baseURI:
+              type: string
+            authType:
+              type: string
+            userName:
+              type: string
+            password:
+              type: string
+        endPointURI:
+          type: string
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/headers'
+        thirdPartyEventType:
+          enum:
+          - POST
+          - PUT
+          - GET
+          - DELETE
+          - PATCH
+          type: string
+        payload:
+          type: string
+        useBaseNotifier:
+          description: Notification details to trigger events defined. To configure
+            integration base notifier.
+          type: boolean
+      example:
+        name: Create event with policy
+        entity: INCIDENT
+        eventType: CREATE
+        filterCriteria:
+          matchType: ANY
+          rules:
+          - key: Subject
+            operator: Contains
+            value: test
+            resourceType: INCIDENT
+          - key: Description
+            operator: Contains
+            value: testing
+            resourceType: INCIDENT
+        notifier:
+          type: SOAP_API
+          baseURI: www.google.com
+          authType: OAUTH2
+          userName: testUser
+          password: test
+        endPointURI: www.google.com/update
+        headers:
+        - key: accept
+          value: application/json
+        - key: Content-Type
+          value: application/json
+        thirdPartyEventType: POST
+        payload: ew0KInN1YmplY3QiOiIkaW5jaWRlbnQuc3ViamVjdCIsDQoiZGVzY3JpcHRpb24iOiIkaW5jaWRlbnQuaW1wYWN0IiwNCiJwcmlvcml0eSI6IiRpbmNpZGVudC5wcmlvcml0eS5uYW1lIg0KInN0YXV0cyI6ImhpZ2giDQp9
+    notfier:
+      description: ""
+      type: object
+      properties:
+        basenotifer:
+          $ref: '#/components/schemas/baseNotifier'
+          description: Define notification details to trigger events
+        type:
+          description: Type of outbound notification
+          enum:
+          - SOAP_API
+          - REST_API
+          type: string
+    responseHeader:
+      title: Root Type for responseHeader
+      description: ""
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      example:
+        key: extTicketId
+        value: $id
+    inboundmapper:
+      title: Root Type for inboundmapper
+      description: ""
+      type: object
+      properties:
+        mapAttributes:
+          $ref: '#/components/schemas/mapAttributesArray'
+          description: ""
+      example:
+        inboundConfig:
+          mapAttributes:
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: Status
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: In Progress-in Open
+            - attrValue: Closed
+              thirdPartyAttrValue: Completed
+          - name: Priority
+            attrName: incident.priority.name
+            thirdPartyAttrName: severity
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: High
+              thirdPartyAttrValue: Max
+            - attrValue: Low
+              thirdPartyAttrValue: min
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: stats
+            entityType: INCIDENT
+            thirdPartyEntityType: Ticket
+            mode: OUTBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: good
+    mapper-container:
+      title: Root Type for inboundmapper
+      description: ""
+      type: object
+      properties:
+        inboundConfig:
+          $ref: '#/components/schemas/inboundConfig'
+          description: ""
+        outboundConfig:
+          $ref: '#/components/schemas/inboundConfig'
+          description: ""
+      example:
+        inboundConfig:
+          mapAttributes:
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: Status
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: In Progress-in Open
+            - attrValue: Closed
+              thirdPartyAttrValue: Completed
+          - name: Priority
+            attrName: incident.priority.name
+            thirdPartyAttrName: severity
+            entityType: INCIDENT
+            thirdPartyEntityType: TICKET
+            mode: INBOUND
+            attrValues:
+            - attrValue: High
+              thirdPartyAttrValue: Max
+            - attrValue: Low
+              thirdPartyAttrValue: min
+          - name: Status
+            attrName: incident.status.name
+            thirdPartyAttrName: stats
+            entityType: INCIDENT
+            thirdPartyEntityType: Ticket
+            mode: OUTBOUND
+            attrValues:
+            - attrValue: Open
+              thirdPartyAttrValue: good
+  securitySchemes:
+    auth:
+      flows:
+        clientCredentials:
+          tokenUrl: https://<base_url>/api/v2/tenants/<client_id>
+      type: oauth2
+      description: This is  OAUTH2 authentication
+security:
+- auth: []
+tags:
+- name: Integration APIs
+  description: OpsRamp Integration API's
