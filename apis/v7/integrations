@@ -2089,6 +2089,193 @@ paths:
         type: string
       in: path
       required: true
+  /integrations/installed/{intgID}/notifier:
+    post:
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Create or update notifier with authentication type OAUTH2 and grant type PASSWORD:
+                value:
+                  type: REST_API
+                  baseURI: www.google.com
+                  authType: OAUTH2
+                  grantType: PASSWORD
+                  userName: testUser
+                  password: '**********'
+                  accessTokenURI: www.token.com/cred
+                  apiKey: 6h67PAAFscVPMwhQZFcshpcqN5b6pyU9
+                  apiSecret: '*****************************************'
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Integration APIs
+      parameters:
+      - name: intgID
+        description: Installed integration UUID
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/baseNotifier'
+              examples:
+                Sample notifier:
+                  value:
+                    baseURI: www.google.com
+                    authType: OAUTH2
+                    grantType: PASSWORD
+                    userName: testUser
+                    apiKey: 6h67PAAFscVPMwhQZFcshpcqN5b6pyU9
+                    accessTokenURI: www.token.com/cred
+                JWT-response:
+                  value:
+                    baseURI: https://us1-smax.saas.microfocus.com
+                    authType: JWT
+                    userName: test
+          description: Reuturn  the update outbound Base notfier.
+  /integrations/install/Email Alerts:
+    post:
+      requestBody:
+        description: email based alerting
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/integration_container'
+            examples:
+              email-alert:
+                value:
+                  displayName: Email Alerts Integration
+                  logo:
+                    name: logo.png
+                    file: 'zWc/aG7Ws5nifQL0cHF6fxW8vRwcXp/Ffyky7HaICAgIXNbBkr5hzWwZK+YY9FmJ/FLppwpn45SvJ2S4oBaNgBAQEBAQEBAQEBAQEBAQEBAQf//Z '
+                  emailProps:
+                  - name: test set 1
+                    identifier: identify
+                    identifierSource: EMAIL_CONTENT
+                    properties:
+                    - name: Alert State
+                      defaultValue: OK
+                      condition:
+                        contentSource: EMAIL_CONTENT
+                        operator: BETWEEN
+                        startValue: value1
+                        endValue: value2
+                    - name: Service Name
+                      condition:
+                        contentSource: EMAIL_CONTENT
+                        operator: BETWEEN
+                        startValue: value1
+                        endValue: value2
+                    - name: Device Host Name
+                      condition:
+                        contentSource: EMAIL_CONTENT
+                        operator: BETWEEN
+                        startValue: value1
+                        endValue: value2
+              email-incident-request:
+                value:
+                  displayName: email request test
+                  ticketType: INCIDENT
+                  logo:
+                    name: test.png
+                    file: zWc/aG7Ws5nifQL0cHF6fxW8vRwcXp/Ffyky7HaICAgIXNbBkr5hzWwZK+YY9FmJ/FLppwpn45SvJ2S4oBaNgBAQEBAQEBAQEBAQEBAQEBAQf//Z
+                  emailProps:
+                  - properties:
+                    - name: Priority
+                      defaultValue: Low
+                      condition:
+                        contentSource: EMAIL_CONTENT
+                        operator: BETWEEN
+                        startValue: value1
+                        endValue: value2
+                      propertyMappings:
+                        attrValues:
+                        - attrValue: Low
+                          thirdPartyAttrValue: myval
+                    - name: Subject
+                      value: Email Subject
+                    - name: Description
+                      value: Email Description
+                    - name: Allow anonymous user
+                      value: "true"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/integration_instance'
+              examples:
+                email-alert-response:
+                  value:
+                    id: INTG-d9b99937-7906-42c7-955c-68a237144ac7
+                    displayName: email alerts test from api try 44
+                    integration:
+                      id: Email Alerts
+                      name: Email Alerts
+                    emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
+                    emailProps:
+                    - name: test set 1
+                      identifier: "."
+                      identifierSource: EMAIL_CONTENT
+                      properties:
+                      - name: Alert State
+                        defaultValue: OK
+                        condition:
+                          contentSource: EMAIL_CONTENT
+                          operator: BETWEEN
+                          startValue: value1
+                          endValue: value2
+                      - name: Service Name
+                        condition:
+                          contentSource: EMAIL_CONTENT
+                          operator: BETWEEN
+                          startValue: value1
+                          endValue: value2
+                      - name: Device Host Name
+                        condition:
+                          contentSource: EMAIL_CONTENT
+                          operator: BETWEEN
+                          startValue: value1
+                          endValue: value2
+                email-incident:
+                  value:
+                    id: INTG-02d467ee-41f2-4d1e-9c55-e8365b421f21
+                    displayName: email incidents test
+                    integration:
+                      id: EMAILINCIDENTS
+                      name: Email Requests
+                    emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
+                    emailProps:
+                    - properties:
+                      - name: Allow anonymous user
+                        value: "true"
+                      - name: Subject
+                        value: Email Subject
+                      - name: Description
+                        value: Email Description
+                      - name: Priority
+                        defaultValue: Low
+                        condition:
+                          contentSource: EMAIL_CONTENT
+                          operator: BETWEEN
+                          startValue: value1
+                          endValue: value2
+                        propertyMappings:
+                          name: Priority
+                          attrName: incident.priority.name
+                          entityType: INCIDENT
+                          attrValues:
+                          - attrValue: Low
+                            thirdPartyAttrValue: myval
+          description: Email alerting configuration.
+      operationId: emailAlerts
+  /integrations/install/EMAILINCIDENTS: {}
 components:
   schemas:
     integration_container:
@@ -2099,8 +2286,6 @@ components:
       - logo
       type: object
       properties:
-        id:
-          type: string
         displayName:
           type: string
         integration:
@@ -2142,6 +2327,9 @@ components:
         singleSignOnAuthentication:
           $ref: '#/components/schemas/SSO_configs'
           description: ""
+        emailconfiguration:
+          $ref: '#/components/schemas/emailconfiguration'
+          description: Email alerts payload
       example:
         id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
         displayName: API Testing
@@ -2436,6 +2624,8 @@ components:
     integration_instance:
       title: Root Type for integration_instance
       description: Model of a given installed integration
+      required:
+      - id
       type: object
       properties:
         id:
@@ -2778,6 +2968,36 @@ components:
           type: string
         accessTokenURL:
           type: string
+        type:
+          description: Outbound API payload channels
+          enum:
+          - REST_API
+          - SOAP_API
+          type: string
+        password:
+          description: JWT or basic  auth related password for the outbound  authentication
+          type: string
+        tokenURL:
+          description: JWT token URL
+          type: string
+        tokenHeaders:
+          description: JWT based required token key values
+          type: array
+          items:
+            $ref: '#/components/schemas/key-value'
+        tokensPath:
+          description: ""
+          type: array
+          items:
+            $ref: '#/components/schemas/key-value'
+        resourceAuthHeaders:
+          description: JWT related headers info in the payoad
+          type: array
+          items:
+            $ref: '#/components/schemas/key-value'
+        tokenPayload:
+          $ref: '#/components/schemas/payload'
+          description: JWT payload for authentication
       example:
         baseURI: www.google.com
         authType: OAUTH2
@@ -2831,26 +3051,13 @@ components:
     emailconfiguration:
       title: Root Type for emailconfiguration
       description: This model represents the email configuration alerting
-      required:
-      - alertSource
+      required: []
       type: object
       properties:
         emailProps:
           type: array
           items:
             $ref: '#/components/schemas/emailProperty'
-        alertSource:
-          $ref: '#/components/schemas/alertSource'
-          properties:
-            id:
-              format: int32
-              type: integer
-            name:
-              type: string
-            displayName:
-              type: string
-            techUid:
-              type: string
         emailAddress:
           type: string
       example:
@@ -3358,6 +3565,13 @@ components:
             attrValues:
             - attrValue: Open
               thirdPartyAttrValue: good
+    payload:
+      description: key value pairs
+      type: object
+      properties:
+        rest:
+          description: ""
+          type: string
   securitySchemes:
     auth:
       flows:
