@@ -43,18 +43,57 @@ paths:
                       authType: OAUTH2
                       role:
                         uniqueId: ROLE-4718b729-50cc-6634-42c4-ecd09558389d
+              AWS-cloud-with-assume-role:
+                value:
+                  displayName: AWS
+                  credential:
+                    credentialType: AWS
+                    AWSType: IAM with AssumeRole
+                    Regions: us-east-1
+                    AccountNumber: '*********'
+                    AccessKey: '************'
+                    SecurityKey: '***********'
+                    AssumeRoleARN: '*********************'
+                    ExternalId: '**********************'
+              SSO-example:
+                value:
+                  singleSignOnAuthentication:
+                    type: Okta
+                    issuerUrl: https://localhost.com
+                    redirectionUrl: https://localhost.com
+                    logoutUrl: https://localhost.com
+                    certificate: MIIDrTCCAxagAwIBAgIBADANBgkqhkiG9w0BAQQFADCBnDEbMBkGA1UEChMSVGhlIFNhbXBsZSBDb21wYW55MRQwEgYDVQQLEwtDQSBEaXZpc2lvbjEcMBoGCSqGSIb3DQEJARYNY2FAc2FtcGxlLmNvbTETMBEGA1UEBxMKTWV0cm9wb2xpczERMA8GA1UECBMITmV3IFlvcmsxCzAJBgNVBAYTAlVTMRQwEgYDVQQDEwtUU0MgUm9vdCBDQTAeFw0wMTEyMDgwNDI3MDVaFw0wMjEyMDgwNDI3MDVaMIGcMRswGQYDVQQKExJUaGUgU2FtcGxlIENvbXBhbnkxFDASBgNVBAsTC0NBIERpdmlzaW9uMRwwGgYJKoZIhvcNAQkBFg1jYUBzYW1wbGUuY29tMRMwEQYDVQQHEwpNZXRyb3BvbGlzMREwDwYDVQQIEwhOZXcgWW9yazELMAkGA1UEBhMCVVMxFDASBgNVBAMTC1RTQyBSb290IENBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaiAwfKB6ZBtnTRTIo6ddomt0S9ec0NcuvtJogt0s9dXpHowh98FCDjnLtCi8du6LDTZluhlOtTFARPlV/LVnpsbyMCXMsG2qpdjJop+XIBdvoCz2HpGXjUmym8WLqt+coWwJqUSwiEba74JG93v7TU+Xcvc005MWnxmKZzDR3QIDAQABo4H8MIH5MAwGA1UdEwQFMAMBAf8wHQYDVR0OBBYEFGvyytrBtEquMX2dreysixMlPMMIHJBgNVHSMEgcEwgb6AFGvyytrBtEquMX2dreysixMlPMoYGipIGfMIGcMRswGQYDVQQKExJUaGUgU2FtcGxlIENvbXBhbnkxFDASBgNVBAsTC0NBIERpdmlzaW9uMRwwGgYJKoZIhvcNAQkBFg1jYUBzYW1wbGUuY29tMRMwEQYDVQQHEwpNZXRyb3BvbGlzMREwDwYDVQQIEwhOZXcgWW9yazELMAkGA1UEBhMCVVMxFDASBgNVBAMTC1RTQyBSb290IENBggEAMA0GCSqGSIb3DQEBBAUAA4GBABclymJfsPOUazNQO8aIaxwVbXWS+8AFEkMMRx6O68ICAMubQBvs8Buz3ALXhqYeFS5G13pW2ZnAlSdTkSTKkE5wGZ1RYSfyiEKXb+uOKhDN9LnajDzaMPkNDU2NDXDzSqHk9ZiE1boQaMzjNLu+KabTLpmL9uXvFA/i+gdenFHv
         required: true
       servers:
       - url: https://<base_url>/api/v2/tenants/<client_id>
         description: ""
       tags:
-      - Integration APIs
+      - Installing Available Integration API's
+      - Installable Integrations
+      parameters:
+      - examples:
+          integrationID:
+            value: CUSTOM
+          AWS:
+            value: AWS
+          AZURE:
+            value: AZURE
+          OKTA:
+            value: OKTA
+          PINGDOM:
+            value: PINGDOM
+        name: intgID
+        description: 'Given inegration name from the available list '
+        schema:
+          type: string
+        in: path
+        required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/integration_container'
+                $ref: '#/components/schemas/integration_instance'
               examples:
                 custom_integration:
                   value:
@@ -69,6 +108,37 @@ paths:
                       name: Custom
                       displayName: Custom
                       techUid: CUSTOM
+                SSO-Response:
+                  value:
+                    id: INTG-70ba0f52-cef2-45a6-b46c-526c80afa85c
+                    integration:
+                      id: OKTA
+                      name: Okta
+                    singleSignOnAuthentication:
+                      type: Okta
+                      issuerUrl: https://localhost.com
+                      redirectionUrl: https://localhost.com
+                      logoutUrl: https://localhost.com
+                GCP-cloud-integration:
+                  value:
+                    id: INTG-948776fe-7f27-4ba0-86d3-28dcc2a30297
+                    integration:
+                      id: GOOGLE
+                      name: Google
+                    credential:
+                      Name: Google GOOGLE Integration
+                      ProjectId: '********************'
+                      ServiceAccountEmail: '********************************'
+                PINGDOM-response-Payload:
+                  value:
+                    id: INTG-74640545-0895-4924-9261-250ce5ce7ad5
+                    integration:
+                      id: PINGDOM
+                      name: Pingdom
+                    inboundConfig:
+                      authentication:
+                        authType: WEBHOOK
+                        token: 3jAUsNyeBfgnwJtzCubMpAjhR8EfWZrk
           description: Returns the installed custom integration with id
       operationId: install
       summary: install integration with custom and defaut type
@@ -76,90 +146,15 @@ paths:
     - examples:
         integrationID:
           value: CUSTOM
+        AWS:
+          value: AWS
+        AZURE:
+          value: AZURE
       name: intgID
       schema:
         type: string
       in: path
       required: true
-  /integrations/available/search/:
-    summary: Search OpsRamp provided integrations
-    description: Search all the available integrations list
-    servers:
-    - url: https://<base_url>/api/v2/tenants/<client_id>
-      description: ""
-    get:
-      servers:
-      - url: https://<base_url>/api/v2/tenants/<client_id>
-        description: ""
-      tags:
-      - Integration APIs
-      parameters:
-      - name: pageNo
-        description: the queried page no
-        schema:
-          type: number
-        in: query
-      - name: pageSize
-        description: Size 0f the page
-        schema:
-          type: number
-        in: query
-      - name: isDescendingOrder
-        description: ""
-        schema:
-          type: boolean
-        in: query
-      - name: sortName
-        description: sorting list
-        schema:
-          type: string
-        in: query
-      - name: queryString
-        description: ""
-        schema:
-          type: string
-        in: query
-        required: false
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/integration_list'
-              examples:
-                available_integrations:
-                  value:
-                    results:
-                    - id: ALERTLOGIC
-                      name: Alert Logic
-                    - id: DELLCOMPELLENT
-                      name: Dell Compellent
-                    - id: Email Alerts
-                      name: Email Alerts
-                    - id: GRAPHITE
-                      name: Graphite
-                    - id: NAGIOS
-                      name: Nagios
-                    - id: NEUSTAR
-                      name: Neustar
-                    - id: NEWRELIC_LEGACY
-                      name: NewRelic_Legacy
-                    - id: NIMSOFT
-                      name: Nimsoft
-                    - id: OPSMANAGER
-                      name: OpsManager
-                    - id: CUSTOM
-                      name: Custom
-                    totalResults: 14
-                    pageNo: 1
-                    pageSize: 10
-                    totalPages: 2
-                    nextPage: true
-                    nextPageNo: 2
-                    previousPageNo: 0
-                    descendingOrder: false
-          description: success get al the available list.
-      description: Search in the  available list
   /integrations/installed/search:
     summary: Search from all the installed integration for a tenant
     description: Search all the available integrations list
@@ -171,7 +166,8 @@ paths:
       - url: https://<base_url>/api/v2/tenants/<client_id>
         description: ""
       tags:
-      - Integration APIs
+      - Search-GET-Integration APIs
+      - Installed-Integration-APIs
       parameters:
       - name: pageNo
         description: the queried page no
@@ -857,7 +853,7 @@ paths:
       - url: https://<base_url>/api/v2/tenants/<client_id>
         description: ""
       tags:
-      - Integration APIs
+      - Search-GET-Integration APIs
       parameters:
       - name: pageNo
         description: the queried page no
@@ -1545,6 +1541,8 @@ paths:
                 value:
                   uninstallReason: Integration not required
         required: true
+      tags:
+      - Integration APIs
       responses:
         "200":
           description: uninstalling the integration
@@ -1560,6 +1558,9 @@ paths:
     summary: Installed integration events in OpsRamp
     description: Get the event of Opsramp entities like Resource,tickets
     get:
+      tags:
+      - Integration-event-APIs
+      - Installed-Integration-APIs
       parameters:
       - name: installedIntgId
         description: UUID for the integration
@@ -1692,6 +1693,9 @@ paths:
                   thirdPartyEventType: POST
                   payload: ewoJInNlcnZpY2VOYW1lIjoiJGFsZXJ0LnNlcnZpY2VOYW1lIiwKCSJyZXNvdXJjZSI6ewoJCSJpZCI6IiRhbGVydC5yZXNvdXJjZUlkIgoJfSwKCSJzdWJqZWN0IjoiJGFsZXJ0LnN1YmplY3QiLAogICAgICAgICJjdXJyZW50U3RhdGUiOiIkYWxlcnQuY3VycmVudFN0YXRlIiwKCSJhcHAiOiJPUFNSQU1QIgp9
         required: true
+      tags:
+      - Integration-event-APIs
+      - Installed-Integration-APIs
       responses:
         "200":
           content:
@@ -1767,6 +1771,8 @@ paths:
   /integrations/installed/{installedIntgId}/event/{eventID}:
     summary: Details of a given Integration event
     get:
+      tags:
+      - Integration-event-APIs
       parameters:
       - examples:
           intg-uuid:
@@ -1841,6 +1847,8 @@ paths:
       required: true
   /integrations/installed/{installedIntgId}/event/{eventID}/activate:
     post:
+      tags:
+      - Integration-event-APIs
       parameters:
       - name: installedIntgId
         in: path
@@ -1865,6 +1873,8 @@ paths:
       required: true
   /integrations/installed/{installedIntgId}/event/{eventID}/deactive:
     post:
+      tags:
+      - Integration-event-APIs
       parameters:
       - name: installedIntgId
         in: path
@@ -1902,6 +1912,8 @@ paths:
                   role:
                     uniqueId: ROLE-3a837b66-d070-11e9-aec5-525400f5efd3
                     name: Intg SDesk_Device Manage
+      tags:
+      - Custom Integration APIs
       responses:
         "200":
           content:
@@ -1926,6 +1938,8 @@ paths:
       required: true
   /integrations/installed/{intgID}/mapping-attr:
     get:
+      tags:
+      - Search-GET-Integration APIs
       parameters:
       - name: intgID
         in: path
@@ -2004,6 +2018,8 @@ paths:
             schema:
               $ref: '#/components/schemas/mapper-container'
         required: false
+      tags:
+      - Custom Integration APIs
       parameters:
       - name: intgID
         in: path
@@ -2090,6 +2106,7 @@ paths:
       in: path
       required: true
   /integrations/installed/{intgID}/notifier:
+    summary: Update the outbound base URL and authentication
     post:
       requestBody:
         content:
@@ -2110,7 +2127,7 @@ paths:
       - url: https://<base_url>/api/v2/tenants/<client_id>
         description: ""
       tags:
-      - Integration APIs
+      - Custom Integration APIs
       parameters:
       - name: intgID
         description: Installed integration UUID
@@ -2139,7 +2156,91 @@ paths:
                     authType: JWT
                     userName: test
           description: Reuturn  the update outbound Base notfier.
+      summary: Update the outbound base URL and authentication
+  /integrations/install/EMAILINCIDENTS:
+    summary: email-based incidents
+  /integrations/available/search:
+    summary: Search OpsRamp provided integrations
+    description: Search all the available integrations list
+    servers:
+    - url: https://<base_url>/api/v2/tenants/<client_id>
+      description: ""
+    get:
+      servers:
+      - url: https://<base_url>/api/v2/tenants/<client_id>
+        description: ""
+      tags:
+      - Search-GET-Integration APIs
+      - Installable Integrations
+      parameters:
+      - name: pageNo
+        description: the queried page no
+        schema:
+          type: number
+        in: query
+      - name: pageSize
+        description: Size 0f the page
+        schema:
+          type: number
+        in: query
+      - name: isDescendingOrder
+        description: ""
+        schema:
+          type: boolean
+        in: query
+      - name: sortName
+        description: sorting list
+        schema:
+          type: string
+        in: query
+      - name: queryString
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/integration_list'
+              examples:
+                available_integrations:
+                  value:
+                    results:
+                    - id: ALERTLOGIC
+                      name: Alert Logic
+                    - id: DELLCOMPELLENT
+                      name: Dell Compellent
+                    - id: Email Alerts
+                      name: Email Alerts
+                    - id: GRAPHITE
+                      name: Graphite
+                    - id: NAGIOS
+                      name: Nagios
+                    - id: NEUSTAR
+                      name: Neustar
+                    - id: NEWRELIC_LEGACY
+                      name: NewRelic_Legacy
+                    - id: NIMSOFT
+                      name: Nimsoft
+                    - id: OPSMANAGER
+                      name: OpsManager
+                    - id: CUSTOM
+                      name: Custom
+                    totalResults: 14
+                    pageNo: 1
+                    pageSize: 10
+                    totalPages: 2
+                    nextPage: true
+                    nextPageNo: 2
+                    previousPageNo: 0
+                    descendingOrder: false
+          description: success get al the available list.
+      description: Search in the  available list
   /integrations/install/Email Alerts:
+    summary: Email based alerting
     post:
       requestBody:
         description: email based alerting
@@ -2204,78 +2305,14 @@ paths:
                       value: Email Description
                     - name: Allow anonymous user
                       value: "true"
+      tags:
+      - Email Integrations API
+      - Installable Integrations
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/integration_instance'
-              examples:
-                email-alert-response:
-                  value:
-                    id: INTG-d9b99937-7906-42c7-955c-68a237144ac7
-                    displayName: email alerts test from api try 44
-                    integration:
-                      id: Email Alerts
-                      name: Email Alerts
-                    emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
-                    emailProps:
-                    - name: test set 1
-                      identifier: "."
-                      identifierSource: EMAIL_CONTENT
-                      properties:
-                      - name: Alert State
-                        defaultValue: OK
-                        condition:
-                          contentSource: EMAIL_CONTENT
-                          operator: BETWEEN
-                          startValue: value1
-                          endValue: value2
-                      - name: Service Name
-                        condition:
-                          contentSource: EMAIL_CONTENT
-                          operator: BETWEEN
-                          startValue: value1
-                          endValue: value2
-                      - name: Device Host Name
-                        condition:
-                          contentSource: EMAIL_CONTENT
-                          operator: BETWEEN
-                          startValue: value1
-                          endValue: value2
-                email-incident:
-                  value:
-                    id: INTG-02d467ee-41f2-4d1e-9c55-e8365b421f21
-                    displayName: email incidents test
-                    integration:
-                      id: EMAILINCIDENTS
-                      name: Email Requests
-                    emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
-                    emailProps:
-                    - properties:
-                      - name: Allow anonymous user
-                        value: "true"
-                      - name: Subject
-                        value: Email Subject
-                      - name: Description
-                        value: Email Description
-                      - name: Priority
-                        defaultValue: Low
-                        condition:
-                          contentSource: EMAIL_CONTENT
-                          operator: BETWEEN
-                          startValue: value1
-                          endValue: value2
-                        propertyMappings:
-                          name: Priority
-                          attrName: incident.priority.name
-                          entityType: INCIDENT
-                          attrValues:
-                          - attrValue: Low
-                            thirdPartyAttrValue: myval
-          description: Email alerting configuration.
+          $ref: '#/components/responses/200-OK-Integration-email'
       operationId: emailAlerts
-  /integrations/install/EMAILINCIDENTS: {}
+      summary: Email based alerting
 components:
   schemas:
     integration_container:
@@ -2330,6 +2367,9 @@ components:
         emailconfiguration:
           $ref: '#/components/schemas/emailconfiguration'
           description: Email alerts payload
+        public-cloud-request:
+          $ref: '#/components/schemas/public-cloud-intg-container'
+          description: 'Request payload for public cloud    '
       example:
         id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
         displayName: API Testing
@@ -2765,6 +2805,9 @@ components:
         singleSignOnAuthentication:
           $ref: '#/components/schemas/SSO_configs'
           description: In case SSO integrations properties are used to get.
+        cloud-details:
+          $ref: '#/components/schemas/public-cloud-intg-container'
+          description: Response payload schema for cloud details
       example:
         id: INTG-519ad3f6-0954-47b8-b306-20f78dcb937a
         integration:
@@ -3048,67 +3091,6 @@ components:
         attrValues:
         - attrValue: ""
           thirdPartyAttrValue: ""
-    emailconfiguration:
-      title: Root Type for emailconfiguration
-      description: This model represents the email configuration alerting
-      required: []
-      type: object
-      properties:
-        emailProps:
-          type: array
-          items:
-            $ref: '#/components/schemas/emailProperty'
-        emailAddress:
-          type: string
-      example:
-        emailProps:
-        - name: Critical-State-Rule
-          identifier: Critical
-          identifierSource: EMAIL_SUBJECT
-          properties:
-          - name: Alert State
-            defaultValue: Ok
-            condition:
-              contentSource: EMAIL_CONTENT
-              operator: BETWEEN
-              startValue: 'Severity:'
-              endValue: ','
-          - name: Device Host Name
-            defaultValue: Unknown
-            condition:
-              contentSource: EMAIL_CONTENT
-              operator: BETWEEN
-              startValue: 'Hostname:'
-              endValue: ','
-          - name: Service Name
-            defaultValue: Unknown
-            condition:
-              contentSource: EMAIL_CONTENT
-              operator: BETWEEN
-              startValue: 'Metric Name:'
-              endValue: ','
-        - name: Default Set
-          identifier: "."
-          identifierSource: EMAIL_SUBJECT
-          properties:
-          - name: Alert State
-            defaultValue: Ok
-            condition:
-              contentSource: DEFAULT_VALUE
-          - name: Device Host Name
-            defaultValue: Default_Device
-            condition:
-              contentSource: DEFAULT_VALUE
-          - name: Service Name
-            defaultValue: Default_Metric
-            condition:
-              contentSource: DEFAULT_VALUE
-        alertSource:
-          id: 188
-          name: Test Source
-          displayName: Test Alert Source
-          techUid: TESTSOURCE
-        emailAddress: alerts@6hU3YCVwEtNXZDzv2jWTbRBn.opsramp.net
     emailProperty:
       description: All the email parsing logic configurations
       required:
@@ -3123,7 +3105,7 @@ components:
           description: ""
           type: string
         condition:
-          $ref: '#/components/schemas/attribute_parser_condition'
+          $ref: '#/components/schemas/condition'
           description: ""
       example:
         name: Alert State
@@ -3170,25 +3152,16 @@ components:
     attribute_parser:
       title: Root Type for attribute_parser
       description: Model represents the how attributes are parsed
-      required:
-      - condition
       type: object
-      properties:
-        name:
-          type: string
-        defaultValue:
-          type: string
-        condition:
-          $ref: '#/components/schemas/attribute_parser_condition'
-          properties:
-            contentSource:
-              type: string
-            operator:
-              type: string
-            startValue:
-              type: string
-            endValue:
-              type: string
+      allOf:
+      - required: []
+        type: object
+        properties:
+          name:
+            type: string
+          defaultValue:
+            type: string
+      - $ref: '#/components/schemas/condition'
       example:
         name: Alert State
         defaultValue: Ok
@@ -3200,24 +3173,6 @@ components:
     parser_condition_logic:
       title: Root Type for parser_condition_logic
       description: ""
-      type: object
-      properties:
-        contentSource:
-          type: string
-        operator:
-          type: string
-        startValue:
-          type: string
-        endValue:
-          type: string
-      example:
-        contentSource: EMAIL_CONTENT
-        operator: BETWEEN
-        startValue: 'Severity:'
-        endValue: ','
-    attribute_parser_condition:
-      title: Root Type for attribute_parser_condition
-      description: The parsing condition defintion
       type: object
       properties:
         contentSource:
@@ -3572,6 +3527,416 @@ components:
         rest:
           description: ""
           type: string
+    public-cloud-intg-container:
+      oneOf:
+      - type: object
+      - $ref: '#/components/schemas/aws-cred-set'
+      - $ref: '#/components/schemas/azure-cred-set'
+      - $ref: '#/components/schemas/google-cred-set'
+      title: Root Type for public-cloud-intg-container
+      description: 'Request payload for public cloud    '
+      type: object
+      example:
+        displayName: AZURE
+        credential:
+          credentialType: AZURE
+          SubscriptionId: '*************'
+          AzureType: ARM
+          TenantId: '**********'
+          ClientID: '**********'
+          SecretKey: '*********'
+    aws-cred-set:
+      title: Root Type for aws-cred-set
+      description: AWS credentials set
+      type: object
+      properties:
+        credentialType:
+          type: string
+        AWSType:
+          enum:
+          - IAM-with-AssumeRole
+          - IAM
+          type: string
+        Regions:
+          type: string
+        AccountNumber:
+          type: string
+        AccessKey:
+          type: string
+        SecurityKey:
+          type: string
+        AssumeRoleARN:
+          description: AssumeRoleARN of AWS
+          type: string
+        ExternalId:
+          description: AWS external ID
+          type: string
+        Name:
+          $ref: '#/components/schemas/integration_name'
+          description: Installed AWS instance name
+      example:
+        credentialType: AWS
+        AWSType: IAM
+        Regions: All
+        AccountNumber: '**********'
+        AccessKey: '*************'
+        SecurityKey: '*************'
+    azure-cred-set:
+      title: Root Type for azure-cred-set
+      description: Azure credentials
+      type: object
+      properties:
+        credentialType:
+          type: string
+        SubscriptionId:
+          type: string
+        AzureType:
+          enum:
+          - ASM
+          - ARM
+          type: string
+        TenantId:
+          type: string
+        ClientID:
+          type: string
+        SecretKey:
+          type: string
+        ManagementCertificate:
+          type: string
+        KeystorePassword:
+          type: string
+        Name:
+          description: Installed AZure instance name
+          type: string
+      example:
+        credentialType: AZURE
+        SubscriptionId: '*************'
+        AzureType: ASM
+        TenantId: '**********'
+        ClientID: '**********'
+        SecretKey: '*********'
+        ManagementCertificate: '**********'
+        KeystorePassword: '**********'
+    public-cloud-intg-instance:
+      title: Root Type for public-cloud-intg-container
+      description: 'Request payload for public cloud    '
+      type: object
+      allOf:
+      - required: []
+        type: object
+        properties:
+          id:
+            description: Integration unique ID.
+            type: string
+      - $ref: '#/components/schemas/public-cloud-intg-container'
+      example:
+        displayName: AZURE
+        credential:
+          credentialType: AZURE
+          SubscriptionId: '*************'
+          AzureType: ARM
+          TenantId: '**********'
+          ClientID: '**********'
+          SecretKey: '*********'
+    generic_intergration:
+      anyOf:
+      - type: object
+      - $ref: '#/components/schemas/inboundConfig'
+      - $ref: '#/components/schemas/outboundConfig'
+      - $ref: '#/components/schemas/emailconfiguration'
+      - $ref: '#/components/schemas/public-cloud-intg-container'
+      - $ref: '#/components/schemas/SSO_configs'
+      description: The generic payload schema reperesentation for the whole Integrations
+        API
+      required:
+      - Integration__info
+      type: object
+      properties:
+        Integration__info:
+          $ref: '#/components/schemas/integration_generic_info'
+          description: Schema defines the basic integration info on it's ID ,name
+            logo
+    emailconfiguration:
+      title: Root Type for emailconfiguration
+      description: This model represents the email configuration alerting
+      required: []
+      type: object
+      properties:
+        emailProps:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailProperty'
+        emailAddress:
+          format: email
+          type: string
+        alertSource:
+          $ref: '#/components/schemas/alertSource'
+          description: ""
+      example:
+        emailProps:
+        - name: Critical-State-Rule
+          identifier: Critical
+          identifierSource: EMAIL_SUBJECT
+          properties:
+          - name: Alert State
+            defaultValue: Ok
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Severity:'
+              endValue: ','
+          - name: Device Host Name
+            defaultValue: Unknown
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Hostname:'
+              endValue: ','
+          - name: Service Name
+            defaultValue: Unknown
+            condition:
+              contentSource: EMAIL_CONTENT
+              operator: BETWEEN
+              startValue: 'Metric Name:'
+              endValue: ','
+        - name: Default Set
+          identifier: "."
+          identifierSource: EMAIL_SUBJECT
+          properties:
+          - name: Alert State
+            defaultValue: Ok
+            condition:
+              contentSource: DEFAULT_VALUE
+          - name: Device Host Name
+            defaultValue: Default_Device
+            condition:
+              contentSource: DEFAULT_VALUE
+          - name: Service Name
+            defaultValue: Default_Metric
+            condition:
+              contentSource: DEFAULT_VALUE
+        alertSource:
+          id: 188
+          name: Test Source
+          displayName: Test Alert Source
+          techUid: TESTSOURCE
+        emailAddress: alerts@6hU3YCVwEtNXZDzv2jWTbRBn.opsramp.net
+    integration_generic_info:
+      title: Root Type for integration_container
+      description: Data model for integration
+      required:
+      - integration
+      - logo
+      type: object
+      properties:
+        displayName:
+          type: string
+        integration:
+          $ref: '#/components/schemas/integration_name'
+          properties:
+            id:
+              type: string
+              readOnly: true
+            name:
+              type: string
+        category:
+          type: string
+        alertSource:
+          $ref: '#/components/schemas/alertSource'
+          properties:
+            id:
+              format: int32
+              type: integer
+              readOnly: true
+            name:
+              type: string
+            displayName:
+              type: string
+            techUid:
+              type: string
+        logo:
+          $ref: '#/components/schemas/logos'
+          description: 'logo for the installed integration '
+        parentIntg:
+          $ref: '#/components/schemas/key'
+          description: Inheritance proeprty for the integration
+        direction:
+          description: ""
+          type: string
+      example:
+        id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
+        displayName: API Testing
+        integration:
+          id: CUSTOM
+          name: Custom
+        category: Monitoring
+        alertSource:
+          id: 30
+          name: Custom
+          displayName: Custom
+          techUid: CUSTOM
+    google-cred-set:
+      title: Root Type for google-cred-set
+      description: REquest payload for google credentials
+      type: object
+      properties:
+        credentialType:
+          type: string
+        ServiceAccountEmail:
+          format: email
+          type: string
+        ProjectId:
+          type: string
+        ServiceAccountManagementCertificate:
+          type: string
+        ManagementCertificatePassPhrase:
+          type: string
+        Name:
+          description: Installed GCP instance name
+          type: string
+      example:
+        credentialType: GOOGLE
+        ServiceAccountEmail: '*****************'
+        ProjectId: '**********'
+        ServiceAccountManagementCertificate: '*********'
+        ManagementCertificatePassPhrase: '*********'
+    condition:
+      title: Root Type for attribute_parser_condition
+      description: The parsing condition defintion
+      type: object
+      properties:
+        contentSource:
+          type: string
+        operator:
+          type: string
+        startValue:
+          type: string
+        endValue:
+          type: string
+      example:
+        contentSource: EMAIL_CONTENT
+        operator: BETWEEN
+        startValue: 'Severity:'
+        endValue: ','
+  responses:
+    "200-OK":
+      content:
+        application/json: {}
+      description: API response payload OK
+    "200-OK-Integration-category-alertSource":
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/integration_instance'
+          examples:
+            Install custom integration with  with monitoring catogery:
+              value:
+                id: INTG-6aa0bbec-ef5b-4ff2-b373-5a4f7ab0a385
+                displayName: API Testing
+                integration:
+                  id: CUSTOM
+                  name: Custom
+                category: Monitoring
+                alertSource:
+                  id: 30
+                  name: Custom
+                  displayName: Custom
+                  techUid: CUSTOM
+            'Install custom integration with category and direction Sample request ':
+              value:
+                id: INTG-7213eaa0-8c59-42b2-a1db-90147cfd3ef3
+                displayName: InboundApp
+                integration:
+                  id: CUSTOM
+                  name: Custom
+                category: Collaboration
+                direction: Inbound
+            Install custom integration with authentication details:
+              value:
+                id: INTG-58431d1c-1bdc-4a68-a49f-34435ead1d14
+                displayName: API Testing
+                integration:
+                  id: CUSTOM
+                  name: Custom
+                category: Custom
+                inboundConfig:
+                  authentication:
+                    authType: OAUTH2
+                    token: 7VttjkVtm7qk6AwaRpED4Uh4jdAFpaVb
+                    role:
+                      uniqueId: ROLE-4718b729-50cc-6634-42c4-ecd09558389d
+                      name: Customer
+      description: custom integration with category and alert alertSource
+    "200-OK-Integration-email":
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/integration_instance'
+          examples:
+            email-alerts:
+              value:
+                id: INTG-d9b99937-7906-42c7-955c-68a237144ac7
+                displayName: email alerts test from api try 44
+                integration:
+                  id: Email Alerts
+                  name: Email Alerts
+                emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
+                emailProps:
+                - name: test set 1
+                  identifier: "."
+                  identifierSource: EMAIL_CONTENT
+                  properties:
+                  - name: Alert State
+                    defaultValue: OK
+                    condition:
+                      contentSource: EMAIL_CONTENT
+                      operator: BETWEEN
+                      startValue: value1
+                      endValue: value2
+                  - name: Service Name
+                    condition:
+                      contentSource: EMAIL_CONTENT
+                      operator: BETWEEN
+                      startValue: value1
+                      endValue: value2
+                  - name: Device Host Name
+                    condition:
+                      contentSource: EMAIL_CONTENT
+                      operator: BETWEEN
+                      startValue: value1
+                      endValue: value2
+            email-incidents:
+              value:
+                id: INTG-02d467ee-41f2-4d1e-9c55-e8365b421f21
+                displayName: email incidents test
+                integration:
+                  id: EMAILINCIDENTS
+                  name: Email Requests
+                emailAddress: alerts@5JHqWy4h34xXDwN2gYFtmaYx.opsramp.com
+                emailProps:
+                - properties:
+                  - name: Allow anonymous user
+                    value: "true"
+                  - name: Subject
+                    value: Email Subject
+                  - name: Description
+                    value: Email Description
+                  - name: Priority
+                    defaultValue: Low
+                    condition:
+                      contentSource: EMAIL_CONTENT
+                      operator: BETWEEN
+                      startValue: value1
+                      endValue: value2
+                    propertyMappings:
+                      name: Priority
+                      attrName: incident.priority.name
+                      entityType: INCIDENT
+                      attrValues:
+                      - attrValue: Low
+                        thirdPartyAttrValue: myval
+      description: Example of email alerts response payload and Email incidents response
+        Payloads
   securitySchemes:
     auth:
       flows:
@@ -3584,3 +3949,18 @@ security:
 tags:
 - name: Integration APIs
   description: OpsRamp Integration API's
+- name: Search-GET-Integration APIs
+  description: Enables searching of the installed or the available  APIs
+- name: Installing Available Integration API's
+  description: Installing integrations from available list
+- name: Custom Integration APIs
+  description: ""
+- name: Integration-event-APIs
+  description: ""
+- name: Email Integrations API
+  description: ""
+- name: Installable Integrations
+  description: These APIs about searching integrations belore  being  installed and
+    operational
+- name: Installed-Integration-APIs
+  description: APIs which gets and updates on the all the installed integrations
